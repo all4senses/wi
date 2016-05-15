@@ -156,9 +156,9 @@ function rooms_taxes_menu() {
   // the necessary entity info.
   $items['rooms_taxes/%rooms_taxes'] = array(
     'title callback' => 'rooms_taxes_title',
-    'title arguments' => array(3),
+    'title arguments' => array(1),
     'page callback' => 'rooms_taxes_view',
-    'page arguments' => array(3),
+    'page arguments' => array(1),
     'access arguments' => array('view any rooms_taxes entity'),
   );
 
