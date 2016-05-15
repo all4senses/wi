@@ -30,7 +30,7 @@ function rooms_taxes_schema() {
       // entities and don't require field storage.
         
       
-      /*  
+      
       'title' => array(
               'description' => 'Tax title.',
               'type' => 'varchar',
@@ -44,7 +44,7 @@ function rooms_taxes_schema() {
         'default' => 0,
       ),
         
-        
+      /*    
       'name' => array(
         'description' => 'A machine name of a tax',
         'type' => 'varchar',
