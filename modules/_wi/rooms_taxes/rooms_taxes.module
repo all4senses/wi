@@ -92,6 +92,7 @@ function rooms_taxes_entity_info() {
  * @see entity_example_menu()
  */
 function rooms_taxes_load($id = NULL, $reset = FALSE) {
+  dpm($id, '$id');
   $ids = (isset($id) ? array($id) : array());
   $basic = rooms_taxes_load_multiple($ids, array(), $reset);
   return $basic ? reset($basic) : FALSE;
@@ -273,6 +274,7 @@ function rooms_taxes_list_entities() {
  * Callback for a page title when this entity is displayed.
  */
 function rooms_taxes_title($entity) {
+  dpm($entity, '$entity in title');
   return t('Entity Rooms Taxes (title=@title)', array('@title' => $entity->title));
 }
 
@@ -287,6 +289,7 @@ function rooms_taxes_title($entity) {
  * @see hook_entity_view_alter()
  */
 function rooms_taxes_view($entity, $view_mode = 'tweaky') {
+  dpm($entity, '$entity in view');
   // Our entity type, for convenience.
   $entity_type = 'rooms_taxes';
   // Start setting up the content.
