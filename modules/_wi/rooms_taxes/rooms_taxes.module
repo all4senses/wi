@@ -77,8 +77,8 @@ function rooms_taxes_entity_info() {
  * This function gets its name from the menu system's wildcard
  * naming conventions. For example, /path/%wildcard would end
  * up calling wildcard_load(%wildcard value). In our case defining
- * the path: examples/entity_example/basic/%entity_example_basic in
- * hook_menu() tells Drupal to call entity_example_basic_load().
+ * the path: examples/entity_example/basic/%rooms_taxes in
+ * hook_menu() tells Drupal to call rooms_taxes_load().
  *
  * @param int $basic_id
  *   Integer specifying the basic entity id.
@@ -88,7 +88,7 @@ function rooms_taxes_entity_info() {
  * @return object
  *   A fully-loaded $basic object or FALSE if it cannot be loaded.
  *
- * @see entity_example_basic_load_multiple()
+ * @see rooms_taxes_load_multiple()
  * @see entity_example_menu()
  */
 function rooms_taxes_load($id = NULL, $reset = FALSE) {
@@ -123,14 +123,14 @@ function rooms_taxes_menu() {
   $items['rooms_taxes'] = array(
     'title' => 'Rooms Taxes Entity Info page',
     'page callback' => 'rooms_taxes_info_page',
-    //'access arguments' => array('view any entity_example_basic entity'),
+    'access arguments' => array('view any rooms_taxes entity'),
   );
 
   // This provides a place for Field API to hang its own
   // interface and has to be the same as what was defined
   // in basic_entity_info() above.
   $items['admin/structure/rooms_taxes/manage'] = array(
-    'title' => 'Administer entity_example_basic entity type',
+    'title' => 'Administer rooms_taxes entity type',
     'page callback' => 'rooms_taxes_list_entities',
     'access arguments' => array('administer rooms_taxes entities'),
   );
@@ -152,7 +152,7 @@ function rooms_taxes_menu() {
   // The page to view our entities - needs to follow what
   // is defined in basic_uri and will use load_basic to retrieve
   // the necessary entity info.
-  $items['rooms_taxes/%entity_example_basic'] = array(
+  $items['rooms_taxes/%rooms_taxes'] = array(
     'title callback' => 'rooms_taxes_title',
     'title arguments' => array(3),
     'page callback' => 'rooms_taxes_view',
@@ -161,14 +161,14 @@ function rooms_taxes_menu() {
   );
 
   // 'View' tab for an individual entity page.
-  $items['rooms_taxes/%entity_example_basic/view'] = array(
+  $items['rooms_taxes/%rooms_taxes/view'] = array(
     'title' => 'View',
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'weight' => -10,
   );
 
   // 'Edit' tab for an individual entity page.
-  $items['rooms_taxes/%entity_example_basic/edit'] = array(
+  $items['rooms_taxes/%rooms_taxes/edit'] = array(
     'title' => 'Edit',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('rooms_taxes_form', 3),
@@ -227,7 +227,7 @@ function rooms_taxes_permission() {
 }
 
 /**
- * Returns a render array with all entity_example_basic entities.
+ * Returns a render array with all rooms_taxes entities.
  *
  * In this basic example we know that there won't be many entities,
  * so we'll just load them all for display. See pager_example.module
@@ -377,7 +377,7 @@ function rooms_taxes_add() {
 }
 
 /**
- * Form function to create an entity_example_basic entity.
+ * Form function to create an rooms_taxes entity.
  *
  * The pattern is:
  * - Set up the form for the data that is specific to your
@@ -417,7 +417,7 @@ function rooms_taxes_form($form, &$form_state, $entity) {
 
 
 /**
- * Validation handler for entity_example_basic_add_form form.
+ * Validation handler for rooms_taxes_add_form form.
  *
  * We pass things straight through to the Field API to handle validation
  * of the attached fields.
@@ -434,7 +434,7 @@ function rooms_taxes_form_submit($form, &$form_state) {
   $entity = $form_state['values']['basic_entity'];
   $entity->item_description = $form_state['values']['title'];
   field_attach_submit('rooms_taxes', $entity, $form, $form_state);
-  $entity = entity_example_basic_save($entity);
+  $entity = rooms_taxes_save($entity);
   $form_state['redirect'] = 'rooms_taxes/' . $entity->basic_id;
 }
 
@@ -513,7 +513,7 @@ class EntityRoomsTaxesBasicController
   implements EntityRoomsTaxesBasicControllerInterface {
 
   /**
-   * Create and return a new entity_example_basic entity.
+   * Create and return a new rooms_taxes entity.
    */
   public function create() {
     $entity = new stdClass();
@@ -572,7 +572,7 @@ class EntityRoomsTaxesBasicController
   }
 
   /**
-   * Delete one or more entity_example_basic entities.
+   * Delete one or more rooms_taxes entities.
    *
    * Deletion is unfortunately not supported in the base
    * DrupalDefaultEntityController class.
