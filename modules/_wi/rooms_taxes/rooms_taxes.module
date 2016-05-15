@@ -119,7 +119,7 @@ function rooms_taxes_uri($basic) {
 /**
  * Implements hook_menu().
  */
-function entity_example_menu() {
+function rooms_taxes_menu() {
   $items['rooms_taxes'] = array(
     'title' => 'Rooms Taxes Entity Info page',
     'page callback' => 'rooms_taxes_info_page',
