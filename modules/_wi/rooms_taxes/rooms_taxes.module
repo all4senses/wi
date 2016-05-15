@@ -476,7 +476,7 @@ function rooms_taxes_delete($entity) {
  *
  * @see hook_entity_info_alter()
  */
-interface EntityRoomsTaxesBasicInterface
+interface EntityRoomsTaxesBasicControllerInterface
   extends DrupalEntityControllerInterface {
 
   /**
@@ -508,9 +508,9 @@ interface EntityRoomsTaxesBasicInterface
  * Our subclass of DrupalDefaultEntityController lets us add a few
  * important create, update, and delete methods.
  */
-class EntityRoomsTaxesBasic
+class EntityRoomsTaxesBasicController
   extends DrupalDefaultEntityController
-  implements EntityRoomsTaxesBasicInterface {
+  implements EntityRoomsTaxesBasicControllerInterface {
 
   /**
    * Create and return a new entity_example_basic entity.
