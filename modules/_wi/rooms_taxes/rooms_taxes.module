@@ -173,7 +173,7 @@ function rooms_taxes_menu() {
   $items['rooms_taxes/%rooms_taxes/edit'] = array(
     'title' => 'Edit',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('rooms_taxes_form', 3),
+    'page arguments' => array('rooms_taxes_form', 1),
     'access arguments' => array('edit any rooms_taxes entity'),
     'type' => MENU_LOCAL_TASK,
   );
