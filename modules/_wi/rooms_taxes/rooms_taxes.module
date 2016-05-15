@@ -323,11 +323,10 @@ function rooms_taxes_view($entity, $view_mode = 'tweaky') {
   global $language;
   $langcode = $language->language;
   // And now invoke hook_entity_view().
-  module_invoke_all('entity_view', $entity, $entity_type, $view_mode,
-    $langcode);
+  module_invoke_all('entity_view', $entity, $entity_type, $view_mode, $langcode);
+  
   // Now invoke hook_entity_view_alter().
-  drupal_alter(array('rooms_taxes_view', 'entity_view'),
-    $entity->content, $entity_type);
+  ////drupal_alter(array('rooms_taxes_view', 'entity_view'), $entity->content, $entity_type);
 
   // And finally return the content.
   return $entity->content;
