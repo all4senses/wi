@@ -1,0 +1,92 @@
+<?php
+/**
+ * Implements hook_schema().
+ *
+ */
+function rooms_taxes_schema() {
+  $schema = array();
+
+  // The name of the table can be any name we choose. However, namespacing the
+  // table with the module name is best practice.
+  $schema['rooms_taxes'] = array(
+    'description' => 'The base table for our Rooms taxes.',
+    'fields' => array(
+      'id' => array(
+        'description' => 'Primary key of the tax entity.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      // If we allow multiple bundles, then the schema must handle that;
+      // We'll put it in the 'bundle_type' field to avoid confusion with the
+      // entity type.
+      'bundle_type' => array(
+        'description' => 'The bundle type',
+        'type' => 'text',
+        'size' => 'medium',
+        'not null' => TRUE,
+      ),
+      // Additional properties are just things that are common to all
+      // entities and don't require field storage.
+        
+      
+      /*  
+      'title' => array(
+              'description' => 'Tax title.',
+              'type' => 'varchar',
+              'length' => 255,
+              'not null' => FALSE,
+      ),
+      'timestamp' => array(
+        'description' => 'The Unix timestamp of the tsx entity creation/changing time.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+        
+        
+      'name' => array(
+        'description' => 'A machine name of a tax',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),  
+      'description' => array(
+              'description' => 'Tax description',
+              'type' => 'text',
+              'default' => NULL
+      ),  
+      'hotel_nid' => array(
+              'description' => 'Hotel nid.',
+              'type' => 'int',
+              'length' => 11,
+              'default' => NULL
+      ),
+      'rate' => array(
+              'description' => 'Tax rate',
+              'type' => 'float',
+              'length' => 11,
+              'default' => NULL,
+      ),
+      'tids' => array(
+              'description' => 'Category tids.',
+              'type' => 'text',
+              'default' => NULL
+      ),
+      'status' => array(
+              'description' => 'Status of tax.',
+              'type' => 'int',
+              'size' => 'tiny',
+              'default' => 1,
+      ),  
+      */
+        
+        
+    ),
+    'primary key' => array('id'),
+  );
+
+  return $schema;
+}
+

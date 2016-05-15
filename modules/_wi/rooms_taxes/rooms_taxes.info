@@ -1,0 +1,11 @@
+name = Rooms Taxes
+description = Taxes for rooms and incidentals
+core = 7.x
+package = Rooms Mobiashara
+;configure = admin/structure/entity_example_basic/manage
+
+; Information added by Drupal.org packaging script on 2016-04-25
+version = "7.x-1.x"
+core = "7.x"
+project = "rooms_taxes"
+
