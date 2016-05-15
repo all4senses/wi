@@ -130,7 +130,7 @@ function rooms_taxes_menu() {
   // interface and has to be the same as what was defined
   // in basic_entity_info() above.
   $items['admin/structure/rooms_taxes/manage'] = array(
-    'title' => 'Administer rooms_taxes entity type',
+    'title' => 'Rooms taxes',
     'page callback' => 'rooms_taxes_list_entities',
     'access arguments' => array('administer rooms_taxes entities'),
   );
@@ -432,7 +432,7 @@ function rooms_taxes_form_validate($form, &$form_state) {
  */
 function rooms_taxes_form_submit($form, &$form_state) {
   $entity = $form_state['values']['basic_entity'];
-  $entity->item_description = $form_state['values']['title'];
+  $entity->title = $form_state['values']['title'];
   field_attach_submit('rooms_taxes', $entity, $form, $form_state);
   $entity = rooms_taxes_save($entity);
   $form_state['redirect'] = 'rooms_taxes/' . $entity->id;
