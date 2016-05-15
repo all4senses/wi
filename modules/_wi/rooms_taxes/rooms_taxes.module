@@ -29,7 +29,7 @@ function rooms_taxes_entity_info() {
     // functions. It is not required if we don't have bundles or revisions.
     // Here we do not support a revision, so that entity key is omitted.
     'entity keys' => array(
-      // The 'id' (basic_id here) is the unique id.
+      // The 'id' (id here) is the unique id.
       'id' => 'id' ,
       // Bundle will be determined by the 'bundle_type' field.
       'bundle' => 'bundle_type',
@@ -80,7 +80,7 @@ function rooms_taxes_entity_info() {
  * the path: examples/entity_example/basic/%rooms_taxes in
  * hook_menu() tells Drupal to call rooms_taxes_load().
  *
- * @param int $basic_id
+ * @param int $id
  *   Integer specifying the basic entity id.
  * @param bool $reset
  *   A boolean indicating that the internal cache should be reset.
@@ -112,7 +112,7 @@ function rooms_taxes_load_multiple($ids = FALSE, $conditions = array(), $reset =
  */
 function rooms_taxes_uri($basic) {
   return array(
-    'path' => 'rooms_taxes/' . $basic->basic_id,
+    'path' => 'rooms_taxes/' . $basic->id,
   );
 }
 
@@ -435,7 +435,7 @@ function rooms_taxes_form_submit($form, &$form_state) {
   $entity->item_description = $form_state['values']['title'];
   field_attach_submit('rooms_taxes', $entity, $form, $form_state);
   $entity = rooms_taxes_save($entity);
-  $form_state['redirect'] = 'rooms_taxes/' . $entity->basic_id;
+  $form_state['redirect'] = 'rooms_taxes/' . $entity->id;
 }
 
 /**
@@ -528,7 +528,7 @@ class EntityRoomsTaxesBasicController
    * Saves the custom fields using drupal_write_record().
    */
   public function save($entity) {
-    // If our entity has no basic_id, then we need to give it a
+    // If our entity has no id, then we need to give it a
     // time of creation.
     if (empty($entity->id)) {
       $entity->timestamp = time();
@@ -537,8 +537,8 @@ class EntityRoomsTaxesBasicController
     module_invoke_all('entity_presave', $entity, 'rooms_taxes');
     // The 'primary_keys' argument determines whether this will be an insert
     // or an update. So if the entity already has an ID, we'll specify
-    // basic_id as the key.
-    $primary_keys = $entity->basic_id ? 'id' : array();
+    // id as the key.
+    $primary_keys = $entity->id ? 'id' : array();
     // Write out the entity record.
     drupal_write_record('rooms_taxes', $entity, $primary_keys);
     // We're going to invoke either hook_entity_update() or
@@ -581,7 +581,7 @@ class EntityRoomsTaxesBasicController
    *   An array of entity IDs or a single numeric ID.
    */
   public function deleteMultiple($entities) {
-    $basic_ids = array();
+    $ids = array();
     if (!empty($entities)) {
       $transaction = db_transaction();
       try {
@@ -589,10 +589,10 @@ class EntityRoomsTaxesBasicController
           // Invoke hook_entity_delete().
           module_invoke_all('entity_delete', $entity, 'rooms_taxes');
           field_attach_delete('rooms_taxes', $entity);
-          $basic_ids[] = $entity->basic_id;
+          $ids[] = $entity->id;
         }
         db_delete('rooms_taxes')
-          ->condition('id', $basic_ids, 'IN')
+          ->condition('id', $ids, 'IN')
           ->execute();
       }
       catch (Exception $e) {
