@@ -558,7 +558,7 @@ interface EntityRoomsTaxesBasicControllerInterface
   /**
    * Create an entity.
    */
-  public function create();
+  public function create(array $values = array());
 
   /**
    * Save an entity.
@@ -592,7 +592,7 @@ class EntityRoomsTaxesBasicController
   /**
    * Create and return a new rooms_taxes entity.
    */
-  public function create() {
+  public function create(array $values = array()) {
     $entity = new stdClass();
     $entity->type = 'rooms_taxes';
     $entity->id = 0;
