@@ -63,6 +63,9 @@ function rooms_taxes_entity_info() {
         'custom settings' => FALSE,
       ),
     ),
+      
+    // Entity API needs to know about your module for the views integration to work
+    'module' => 'rooms_taxes',
   );
 
   return $info;
