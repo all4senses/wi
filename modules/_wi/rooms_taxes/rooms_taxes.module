@@ -445,7 +445,7 @@ function rooms_taxes_form($form, &$form_state, $entity) {
     '#default_value' => $entity->target,
   );
   $form['status'] = array(
-    '#type' => 'chackbos',
+    '#type' => 'checkbox',
     '#title' => t('Status'),
     //'#required' => TRUE,
     '#default_value' => $entity->status,
