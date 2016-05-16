@@ -555,13 +555,14 @@ function rooms_taxes_delete($entity) {
  * @see hook_entity_info_alter()
  */
 interface EntityRoomsTaxesBasicControllerInterface
-  extends EntityAPIControllerInterface {
-  //extends DrupalEntityControllerInterface {
+  //extends EntityAPIControllerInterface {
+  extends DrupalEntityControllerInterface {
 
   /**
    * Create an entity.
    */
-  public function create(array $values = array());
+  //public function create(array $values = array());
+  public function create();
 
   /**
    * Save an entity.
@@ -588,14 +589,15 @@ interface EntityRoomsTaxesBasicControllerInterface
  * important create, update, and delete methods.
  */
 class EntityRoomsTaxesBasicController
-  extends EntityAPIController
-  ////extends DrupalDefaultEntityController
+  //extends EntityAPIController
+  extends DrupalDefaultEntityController
   implements EntityRoomsTaxesBasicControllerInterface {
 
   /**
    * Create and return a new rooms_taxes entity.
    */
-  public function create(array $values = array()) {
+  //public function create(array $values = array()) {
+  public function create() {
     $entity = new stdClass();
     $entity->type = 'rooms_taxes';
     $entity->id = 0;
