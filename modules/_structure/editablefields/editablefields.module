@@ -170,8 +170,17 @@ function editablefields_fallback_formatter($entity_type, $entity, $field, $insta
   $display['type'] = $display['settings']['fallback_format'];
   $display['settings'] = $display['settings']['fallback_settings'];
   $formatter_type = field_info_formatter_types($display['type']);
+  
   $display['module'] = $formatter_type['module'];
 
+  if (isset($formatter_type['module'])) {
+   $display['module'] = $formatter_type['module'];
+  }
+  else {
+    return;
+  }
+  
+  
   // Clone the entity to avoid messing with it.
   $cloned_entity = clone $entity;
 
