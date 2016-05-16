@@ -38,13 +38,11 @@ function rooms_taxes_schema() {
               'not null' => FALSE,
       ),
       'timestamp' => array(
-        'description' => 'The Unix timestamp of the tsx entity creation/changing time.',
+        'description' => 'The Unix timestamp of the tax entity creation/changing.',
         'type' => 'int',
         'not null' => TRUE,
         'default' => 0,
       ),
-        
-      /*    
       'name' => array(
         'description' => 'A machine name of a tax',
         'type' => 'varchar',
@@ -69,8 +67,8 @@ function rooms_taxes_schema() {
               'length' => 11,
               'default' => NULL,
       ),
-      'tids' => array(
-              'description' => 'Category tids.',
+      'target' => array(
+              'description' => 'ID(s)/type(s) of object(s) which a current tax is applied to.',
               'type' => 'text',
               'default' => NULL
       ),
@@ -80,7 +78,6 @@ function rooms_taxes_schema() {
               'size' => 'tiny',
               'default' => 1,
       ),  
-      */
         
         
     ),

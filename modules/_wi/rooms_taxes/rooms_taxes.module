@@ -92,10 +92,8 @@ function rooms_taxes_entity_info() {
  * @see entity_example_menu()
  */
 function rooms_taxes_load($id = NULL, $reset = FALSE) {
-  dpm($id, '$id');
   $ids = (isset($id) ? array($id) : array());
   $basic = rooms_taxes_load_multiple($ids, array(), $reset);
-  dpm($basic, '$basic');
   return $basic ? reset($basic) : FALSE;
 }
 
