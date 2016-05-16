@@ -250,9 +250,9 @@ function rooms_taxes_list_entities() {
           'title' => l($entity->title, 'rooms_taxes/' . $entity->id),
           
           'name' => $entity->name,
-          'name' => $entity->description,
-          'name' => $entity->rate,  
-          'name' => $entity->target,
+          'description' => $entity->description,
+          'rate' => $entity->rate,  
+          'target' => $entity->target,
             
           //'bundle' => $entity->bundle_type,
         ),
