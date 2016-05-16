@@ -248,7 +248,13 @@ function rooms_taxes_list_entities() {
         'data' => array(
           'id' => $entity->id,
           'title' => l($entity->title, 'rooms_taxes/' . $entity->id),
-          'bundle' => $entity->bundle_type,
+          
+          'name' => $entity->name,
+          'name' => $entity->description,
+          'name' => $entity->rate,  
+          'name' => $entity->target,
+            
+          //'bundle' => $entity->bundle_type,
         ),
       );
     }
@@ -256,7 +262,8 @@ function rooms_taxes_list_entities() {
     $content['entity_table'] = array(
       '#theme' => 'table',
       '#rows' => $rows,
-      '#header' => array(t('ID'), t('Tax title'), t('Bundle')),
+      //'#header' => array(t('ID'), t('Tax title'), t('Bundle')),
+      '#header' => array(t('ID'), t('Tax title'), t('Name'), t('Description'), t('Rate'), t('Target(s)')),  
     );
   }
   else {
