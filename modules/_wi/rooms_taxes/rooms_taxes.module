@@ -588,7 +588,14 @@ class EntityRoomsTaxesBasicController
     $entity->type = 'rooms_taxes';
     $entity->id = 0;
     $entity->bundle_type = 'incidentals_bundle';
+    
     $entity->title = '';
+    $entity->name = '';
+    $entity->description = '';
+    $entity->rate = '';
+    $entity->target = '';
+    $entity->status = 1;
+    
     return $entity;
   }
 
