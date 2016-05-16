@@ -584,7 +584,8 @@ interface EntityRoomsTaxesBasicControllerInterface
  * important create, update, and delete methods.
  */
 class EntityRoomsTaxesBasicController
-  extends DrupalDefaultEntityController
+  extends EntityAPIController
+  ////extends DrupalDefaultEntityController
   implements EntityRoomsTaxesBasicControllerInterface {
 
   /**
