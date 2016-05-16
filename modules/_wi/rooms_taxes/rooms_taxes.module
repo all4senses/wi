@@ -552,7 +552,8 @@ function rooms_taxes_delete($entity) {
  * @see hook_entity_info_alter()
  */
 interface EntityRoomsTaxesBasicControllerInterface
-  extends DrupalEntityControllerInterface {
+  extends EntityAPIControllerInterface {
+  //extends DrupalEntityControllerInterface {
 
   /**
    * Create an entity.
