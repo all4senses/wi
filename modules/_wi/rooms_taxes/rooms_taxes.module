@@ -473,6 +473,30 @@ function rooms_taxes_add() {
   ); 
 
 
+  $form = array();
+  // Load category based in vocabulary machine name
+  $voc = 'ad_categories';
+  $vocabulary = taxonomy_vocabulary_machine_name_load($voc);
+  $form['ad_categories'] =  array(
+    '#title' => t('What\'s your category?'),
+    '#type'          => 'hierarchical_select',
+    '#config'        => array(
+      'module' => 'hs_taxonomy',
+      'params' => array(
+        'vid'                        => $vid, //(int) $vocabulary->vid,
+        'exclude_tid'                => NULL,
+        'root_term'                  => NULL,
+        'entity_count_for_node_type' => NULL,
+      ),
+    ),
+    '#default_value' => 1,
+  );
+
+  hierarchical_select_common_config_apply( $form['ad_categories'], "taxonomy-$vocabulary->vid");
+  
+  $element_info = element_info('hierarchical_select');
+  $form['ad_categories']['#process'] = array_merge($element_info['#process'], array('hs_taxonomy_widget_process'));
+  
   return $form;
 }
 
