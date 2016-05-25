@@ -970,168 +970,60 @@ function rooms_taxes_hs() {
     $form['not'] = array(
       '#markup' => t('Not installed.'),
     );
+    return $form;
   }
-  else {
-    $form['example_1'] = array(
-      '#type' => 'hierarchical_select',
-      '#title' => t('My car'),
-      '#description' => t('Select your car, or the car that is the closest match to your car.'),
-      '#required' => TRUE,
-      '#default_value' => HSDEMO_TAXONOMY_EXAMPLE_1_DEFAULT,
-      '#config' => array(
-        'module' => 'hs_taxonomy',
-        'params' => array(
-          'vid'                        => HSDEMO_TAXONOMY_EXAMPLE_1_VID,
-          'exclude_tid'                => NULL,
-          'root_term'                  => NULL,
-          'entity_count_for_node_type' => NULL,
-        ),
-        'save_lineage'    => 0,
-        'enforce_deepest' => 1,
-        'entity_count'    => 0,
-        'require_entity'  => 0,
-        'level_labels' => array(
-          'status' => 0,
-        ),
-        'dropbox' => array(
-          'status' => 0,
-        ),
-        'editability' => array(
-          'status' => 0,
-        ),
-        'resizable' => 1,
-        'render_flat_select' => 0,
-      ),
-      '#weight' => 2,
-    );
-        
-    $form['example_1_text'] = array(
-      '#markup' => _hsdemo_example_text(
-                    t('In this example, you are forced to select an item from
-                       the deepest level. And you can resize the widget. This
-                       is one of the most basic forms.<br />
-                       <em>Try to select the BMW 318i. Because you are being
-                       forced to select from the deepest level, it will feel
-                       even easier than expected.</em>'),
-                    $form['example_1']['#config']
-                  ),
-      '#weight' => 1,
-    );
-    
-    
-    $form['example_2'] = array(
-      '#type' => 'hierarchical_select',
-      '#title' => t('My car park'),
-      '#description' => t('At least when I win the lottery … twice.'),
-      '#required' => TRUE,
-      '#default_value' => unserialize(HSDEMO_TAXONOMY_EXAMPLE_2_DEFAULT),
-      '#config' => array(
-        'module' => 'hs_taxonomy',
-        'params' => array(
-          'vid'                        => HSDEMO_TAXONOMY_EXAMPLE_2_VID,
-          'exclude_tid'                => NULL,
-          'root_term'                  => NULL,
-          'entity_count_for_node_type' => NULL,
-        ),
-        'save_lineage'    => 0,
-        'enforce_deepest' => 1,
-        'entity_count'    => 0,
-        'require_entity'  => 0,
-        'level_labels' => array(
-          'status' => 0,
-        ),
-        'dropbox' => array(
-          'status'   => 1,
-          'title'    => t('Car park'),
-          'limit'    => 3,
-          'reset_hs' => 0,
-        ),
-        'editability' => array(
-          'status' => 0,
-        ),
-        'resizable' => 1,
-        'render_flat_select' => 0,
-      ),
-      '#weight' => 4,
-    );
-    
-    $form['example_2_text'] = array(
-      '#markup' => _hsdemo_example_text(
-                    t('In this example, the dropbox is enabled, and a title
-                       and limit are set for it. Also, the selection will not
-                       be reset after you add an item to the dropbox.<br />
-                       <em>Try adding a term and you will get a warning,
-                       stating that you cannot select any additional items.</em>'),
-                    $form['example_2']['#config']
-                  ),
-      '#prefix' => '<div style="margin-top: 5em;">',
-      '#suffix' => '</div>',
-      '#weight' => 3,
-    );
 
-    $form['example_3'] = array(
-      '#type' => 'hierarchical_select',
-      '#title' => t("Places I've visited"),
-      '#required' => TRUE,
-      '#default_value' => unserialize(HSDEMO_TAXONOMY_EXAMPLE_3_DEFAULT),
-      '#config' => array(
-        'module' => 'hs_taxonomy',
-        'params' => array(
-          'vid'                        => HSDEMO_TAXONOMY_EXAMPLE_3_VID,
-          'exclude_tid'                => NULL,
-          'root_term'                  => NULL,
-          'entity_count_for_node_type' => NULL,
-        ),
-        'save_lineage'    => 1,
-        'enforce_deepest' => 0,
-        'entity_count'    => 0,
-        'require_entity'  => 0,
-        'level_labels' => array(
-          'status' => 1,
-          'labels' => array(
-            0 => t('Country'),
-            1 => t('City'),
-          ),
-        ),
-        'dropbox' => array(
-          'status'   => 1,
-          'title'    => t('Places'),
-          'limit'    => 0,
-          'reset_hs' => 1,
-        ),
-        'editability' => array(
-          'status' => 1,
-          'item_types'       => array(
-            0 => t('country')),
-            1 => t('city'),
-          'allowed_levels'   => array(),
-          'allow_new_levels' => 1,
-          'max_levels'       => 2,
-        ),
-        'resizable' => 1,
-        'render_flat_select' => 0,
+
+  $form['example_2'] = array(
+    '#type' => 'hierarchical_select',
+    '#title' => t('My car park'),
+    '#description' => t('At least when I win the lottery … twice.'),
+    '#required' => TRUE,
+    '#default_value' => unserialize(HSDEMO_TAXONOMY_EXAMPLE_2_DEFAULT),
+    '#config' => array(
+      'module' => 'hs_taxonomy',
+      'params' => array(
+        'vid'                        => HSDEMO_TAXONOMY_EXAMPLE_2_VID,
+        'exclude_tid'                => NULL,
+        'root_term'                  => NULL,
+        'entity_count_for_node_type' => NULL,
       ),
-      '#weight' => 6,
-    );
-    
-    $form['example_3_text'] = array(
-      '#markup' => _hsdemo_example_text(
-                    t('In this example, the dropbox still is enabled, but you
-                       are no longer forced to select an item from the deepest
-                       level. Level labels have been entered. And the entire
-                       lineage is being saved. Finally, the ability to create
-                       new items is enabled.<br />
-                       <em>Try adding Paris, you will see that France will be
-                       selected as well.</em><br />
-                       <em>Also try creating some new terms, Hierarchical
-                       Select makes this trivially easy and painless.</em>'),
-                    $form['example_3']['#config']
-                  ),
-      '#prefix' => '<div style="margin-top: 5em;">',
-      '#suffix' => '</div>',
-      '#weight' => 5,
-    );
-  }
+      'save_lineage'    => 0,
+      'enforce_deepest' => 1,
+      'entity_count'    => 0,
+      'require_entity'  => 0,
+      'level_labels' => array(
+        'status' => 0,
+      ),
+      'dropbox' => array(
+        'status'   => 1,
+        'title'    => t('Car park'),
+        'limit'    => 3,
+        'reset_hs' => 0,
+      ),
+      'editability' => array(
+        'status' => 0,
+      ),
+      'resizable' => 1,
+      'render_flat_select' => 0,
+    ),
+    '#weight' => 4,
+  );
+
+  $form['example_2_text'] = array(
+    '#markup' => _hsdemo_example_text(
+                  t('In this example, the dropbox is enabled, and a title
+                     and limit are set for it. Also, the selection will not
+                     be reset after you add an item to the dropbox.<br />
+                     <em>Try adding a term and you will get a warning,
+                     stating that you cannot select any additional items.</em>'),
+                  $form['example_2']['#config']
+                ),
+    '#prefix' => '<div style="margin-top: 5em;">',
+    '#suffix' => '</div>',
+    '#weight' => 3,
+  );
+
   
   return $form;
 }
