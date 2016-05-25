@@ -770,13 +770,16 @@ function rooms_taxes_hs_form() {
 //    return $form;
 //  }
 
+  $default = array(
+      1,3,4,6,
+  );
 
   $form['example_2'] = array(
     '#type' => 'hierarchical_select',
     '#title' => t('My car park'),
     '#description' => t('At least when I win the lottery … twice.'),
     '#required' => TRUE,
-    '#default_value' => unserialize(HSDEMO_TAXONOMY_EXAMPLE_2_DEFAULT),
+    '#default_value' => $default, //unserialize(HSDEMO_TAXONOMY_EXAMPLE_2_DEFAULT),
     '#config' => array(
       'module' => 'hs_taxonomy',
       'params' => array(
@@ -795,7 +798,7 @@ function rooms_taxes_hs_form() {
       'dropbox' => array(
         'status'   => 1,
         'title'    => t('Car park'),
-        'limit'    => 3,
+        'limit'    => 0,
         'reset_hs' => 0,
       ),
       'editability' => array(
