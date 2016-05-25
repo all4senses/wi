@@ -467,7 +467,7 @@ function rooms_taxes_add() {
       // overridden through code.
       'animation_delay'    => 400,
       'special_items'      => array(),
-      'render_flat_select' => 0,
+      'render_flat_select' => 1,
     ),
     '#default_value' => '1',
   ); 
