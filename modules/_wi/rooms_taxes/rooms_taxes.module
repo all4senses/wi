@@ -500,6 +500,65 @@ function rooms_taxes_add() {
   $element_info = element_info('hierarchical_select');
   $form['ad_categories']['#process'] = array_merge($element_info['#process'], array('hs_taxonomy_widget_process'));
   
+  
+  
+  
+  
+  
+  
+  $form = array();
+  
+  $form['hierarchical_select'] = array(
+    '#type' => 'fieldset',
+    '#prefix' => '<div id="hierarchical_select" class="hierarchical_select_wrapper">',
+    '#suffix' => '</div>',
+    '#attributes' => array(
+        'class' => array('hierarchical-select'),
+    ),
+);
+$form['hierarchical_select']['select_subject'] = array(
+    '#type' => 'hierarchical_select',
+    '#title' => t('Select the tag you wish to use.'),
+    '#size' => 1,
+    '#config' => array(
+        'module' => 'hs_taxonomy',
+        'params' => array(
+            'vid' => $vid //The vocab id
+        ),
+        'save_lineage' => 1,
+        'enforce_deepest' => 0,
+        'entity_count' => 0,
+        'require_entity' => 0,
+        'resizable' => 1,
+        'level_labels' => array(
+            'status' => 1,
+            'labels' => array(
+                0 => t('Grade'),
+                1 => t('Subject'),
+                2 => t('Main Topic'),
+                3 => t('Sub Topic'),
+                4 => t('Standard'),
+                5 => t('Sub-Standard'),
+            ),
+        ),
+        'dropbox' => array(
+            'status' => 0,
+            'title' => t('All selections'),
+            'limit' => 0,
+            'reset_hs' => 1,
+        ),
+        'editability' => array(
+            'status' => 0,
+            'item_types' => array(),
+        ),
+        'animation_delay' => 400,
+        'special_items' => array(),
+       'render_flat_select' => 0,
+       'path' => 'hierarchical_select_json',
+    ),
+    '#default_value' => 0,
+);
+
   return $form;
 }
 
