@@ -411,7 +411,7 @@ function rooms_taxes_add() {
   // Create a basic entity structure to be used and passed to the validation
   // and submission functions.
   $entity = entity_get_controller('rooms_taxes')->create();
-  $out = drupal_get_form('rooms_taxes_form', $entity);
+  $form = drupal_get_form('rooms_taxes_form', $entity);
   
   
   $vid = 1;
@@ -471,9 +471,7 @@ function rooms_taxes_add() {
   ); 
 
 
-  $out .= drupal_render($form);
-  
-  return $out;
+  return $form;
 }
 
 /**
