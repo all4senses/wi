@@ -562,7 +562,13 @@ $form['hierarchical_select']['select_subject'] = array(
 
 
 
+$modules = _hsdemo_page_shared();
 
+  if (!in_array('hs_taxonomy', $modules)) {
+    $form['not'] = array(
+      '#markup' => t('Not installed.'),
+    );
+  }
 
 $form = array();
 define('HSDEMO_TAXONOMY_EXAMPLE_2_DEFAULT', serialize(array(6, 21)));
