@@ -419,8 +419,8 @@ function rooms_taxes_add() {
     '#type' => 'hierarchical_select',
     '#title' => t('Select the tag you wish to use.'),
     '#size' => 1,
-    'hsid' => 1,  
-    '#id' => 1,  
+    //'hsid' => 1,  
+    //'#id' => 1,  
     '#config' => array(
       'module' => 'hs_taxonomy',
       'params' => array(
