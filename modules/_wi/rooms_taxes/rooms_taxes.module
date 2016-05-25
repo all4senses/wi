@@ -492,7 +492,7 @@ function rooms_taxes_add() {
     '#default_value' => 1,
   );
 
-  hierarchical_select_common_config_apply( $form['ad_categories'], "taxonomy-$vocabulary->vid");
+  //hierarchical_select_common_config_apply( $form['ad_categories'], "taxonomy-$vid");
   
   $element_info = element_info('hierarchical_select');
   $form['ad_categories']['#process'] = array_merge($element_info['#process'], array('hs_taxonomy_widget_process'));
