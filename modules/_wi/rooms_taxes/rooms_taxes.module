@@ -964,14 +964,14 @@ function rooms_taxes_getHotelTaxes($order_id, $category_tids = array()) {
 
 
 function rooms_taxes_hs() {
-  $modules = _hsdemo_page_shared();
+  //$modules = _hsdemo_page_shared();
 
-  if (!in_array('hs_taxonomy', $modules)) {
-    $form['not'] = array(
-      '#markup' => t('Not installed.'),
-    );
-    return $form;
-  }
+//  if (!in_array('hs_taxonomy', $modules)) {
+//    $form['not'] = array(
+//      '#markup' => t('Not installed.'),
+//    );
+//    return $form;
+//  }
 
 
   $form['example_2'] = array(
@@ -1010,19 +1010,6 @@ function rooms_taxes_hs() {
     '#weight' => 4,
   );
 
-  $form['example_2_text'] = array(
-    '#markup' => _hsdemo_example_text(
-                  t('In this example, the dropbox is enabled, and a title
-                     and limit are set for it. Also, the selection will not
-                     be reset after you add an item to the dropbox.<br />
-                     <em>Try adding a term and you will get a warning,
-                     stating that you cannot select any additional items.</em>'),
-                  $form['example_2']['#config']
-                ),
-    '#prefix' => '<div style="margin-top: 5em;">',
-    '#suffix' => '</div>',
-    '#weight' => 3,
-  );
 
   
   return $form;
