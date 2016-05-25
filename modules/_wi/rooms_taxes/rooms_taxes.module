@@ -785,7 +785,7 @@ function rooms_taxes_hs_form() {
         'root_term'                  => NULL,
         'entity_count_for_node_type' => NULL,
       ),
-      'save_lineage'    => 0,
+      'save_lineage'    => 1,
       'enforce_deepest' => 1,
       'entity_count'    => 0,
       'require_entity'  => 0,
