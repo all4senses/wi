@@ -771,7 +771,7 @@ function rooms_taxes_hs_form() {
 //  }
 
   $default = array(
-      '7',
+      7,
       8,9,
       10
   );
