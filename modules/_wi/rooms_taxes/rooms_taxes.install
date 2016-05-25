@@ -26,10 +26,11 @@ function rooms_taxes_schema() {
         'size' => 'medium',
         'not null' => TRUE,
       ),
+        
+        
+        
       // Additional properties are just things that are common to all
       // entities and don't require field storage.
-        
-      
       
       'title' => array(
               'description' => 'Tax title.',
@@ -78,7 +79,11 @@ function rooms_taxes_schema() {
               'size' => 'tiny',
               'default' => 1,
       ),  
-        
+      'data' => array(
+              'description' => 'Extra data',
+              'type' => 'text',
+              'default' => NULL,
+      ),   
         
     ),
     'primary key' => array('id'),

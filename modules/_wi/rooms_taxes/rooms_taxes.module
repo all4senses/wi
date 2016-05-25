@@ -246,6 +246,8 @@ function rooms_taxes_list_entities() {
   $entities = rooms_taxes_load_multiple();
   if (!empty($entities)) {
     foreach ($entities as $entity) {
+      
+      field_extra_fields_get_display('node', $node->type, $view_mode);
       // Create tabular rows for our entities.
       $rows[] = array(
         'data' => array(
@@ -687,4 +689,59 @@ class EntityRoomsTaxesBasicController
       }
     }
   }
+}
+
+
+/**
+ * Implements hook_commerce_price_component_type_info()
+ * 
+ * Should define price components for all user defined hotel taxes.
+ * 
+ * @return type
+ */
+function rooms_taxes_commerce_price_component_type_info() {
+  
+  $components = array();
+  
+  // Example of a resulting array with rooms taxes cmponents.
+  $stub = array(
+    'rooms_tax|sales_tax' => array(
+      'title' => t('Sales tax'),
+      'weight' => -10,
+    ),
+    'rooms_tax|alcohol_tax' => array(
+      'title' => t('Alcohol tax'),
+      'weight' => -10,
+    ),
+  );
+  $components = $stub;
+  
+  
+  return $components;
+}
+
+/**
+ * 
+ */
+function rooms_taxes_getHotelTaxes($order_id, $category_tids = array()) {
+    
+    $order = commerce_order_load($order_id);
+    $hotel_nid = $order->field_diy_hotel_nid['und'][0]['value'];
+    
+    $taxes = array(
+        'rooms_tax|sales_tax' => array(
+            'name' => 'rooms_tax|sales_tax|110',
+            'title' => 'Sales tax',
+            'rate' => 0.20,
+            'active' => TRUE,
+            ),
+        'rooms_tax|alcohol_tax' => array(
+            'hotel_tax_name' => 'rooms_tax|alcohol_tax|110',
+            'title' => 'Alcohol tax',
+            'rate' => 0.15,
+            'active' => TRUE,
+            ),
+    );
+    
+    return $taxes;
 }
