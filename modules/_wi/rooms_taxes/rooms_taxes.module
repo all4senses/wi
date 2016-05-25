@@ -472,6 +472,7 @@ function rooms_taxes_add() {
     '#default_value' => '1',
   ); 
 
+  module_load_include('inc', 'hierarchical_select', 'includes/common');
 
   $form = array();
   // Load category based in vocabulary machine name
@@ -492,7 +493,7 @@ function rooms_taxes_add() {
     '#default_value' => 1,
   );
 
-  //hierarchical_select_common_config_apply( $form['ad_categories'], "taxonomy-$vid");
+  hierarchical_select_common_config_apply( $form['ad_categories'], "taxonomy-$vid");
   
   $element_info = element_info('hierarchical_select');
   $form['ad_categories']['#process'] = array_merge($element_info['#process'], array('hs_taxonomy_widget_process'));
