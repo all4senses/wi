@@ -489,6 +489,8 @@ function rooms_taxes_add() {
         'root_term'                  => NULL,
         'entity_count_for_node_type' => NULL,
       ),
+      'render_flat_select' => 1,  
+        
     ),
     '#default_value' => 1,
   );
