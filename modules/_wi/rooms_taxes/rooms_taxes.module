@@ -559,6 +559,50 @@ $form['hierarchical_select']['select_subject'] = array(
     '#default_value' => 0,
 );
 
+
+
+
+
+
+$form = array();
+define('HSDEMO_TAXONOMY_EXAMPLE_2_DEFAULT', serialize(array(6, 21)));
+
+$form['example_2'] = array(
+      '#type' => 'hierarchical_select',
+      '#title' => t('My car park'),
+      '#description' => t('At least when I win the lottery … twice.'),
+      '#required' => TRUE,
+      '#default_value' => unserialize(HSDEMO_TAXONOMY_EXAMPLE_2_DEFAULT),
+      '#config' => array(
+        'module' => 'hs_taxonomy',
+        'params' => array(
+          'vid'                        => 1, //HSDEMO_TAXONOMY_EXAMPLE_2_VID,
+          'exclude_tid'                => NULL,
+          'root_term'                  => NULL,
+          'entity_count_for_node_type' => NULL,
+        ),
+        'save_lineage'    => 0,
+        'enforce_deepest' => 1,
+        'entity_count'    => 0,
+        'require_entity'  => 0,
+        'level_labels' => array(
+          'status' => 0,
+        ),
+        'dropbox' => array(
+          'status'   => 1,
+          'title'    => t('Car park'),
+          'limit'    => 3,
+          'reset_hs' => 0,
+        ),
+        'editability' => array(
+          'status' => 0,
+        ),
+        'resizable' => 1,
+        'render_flat_select' => 0,
+      ),
+      '#weight' => 4,
+    );
+
   return $form;
 }
 
