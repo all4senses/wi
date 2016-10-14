@@ -1,0 +1,970 @@
+<?php
+
+/**
+ * @file
+ * Validate phone number.
+ *
+ * Add element_validation method to telephone_default widget to make sure phone
+ * has valid format.
+ */
+
+
+
+
+/**
+ * Implements hook_libraries_info().
+ */
+function telephone_validation_libraries_info() {
+  $libraries = array();
+
+  $libraries['libphonenumber-for-php'] = array(
+    // Only used in administrative UI of Libraries API.
+    'name' => 'libphonenumber for PHP',
+    'vendor url' => 'https://github.com/giggsey/libphonenumber-for-php',
+    'download url' => 'https://github.com/giggsey/libphonenumber-for-php/archive/master.tar.gz',
+    'path' => 'src/libphonenumber',
+    'path' => 'src/libphonenumber',  
+    'version' => '7.4.4',  
+     /* 
+    'version arguments' => array(
+      'file' => 'README.md',
+      'pattern' => '@"giggsey/libphonenumber-for-php": "~([0-9\.]+)"@',
+      'lines' => 40,
+    ),
+    */
+    'files' => array(
+      'php' => array(
+        '../../vendor/autoload.php',
+        'PhoneNumber.php',
+        'PhoneNumberUtil.php',
+        'CountryCodeToRegionCodeMap.php',
+        'RegionCode.php',
+        'PhoneMetadata.php',
+        'PhoneNumberDesc.php',
+        'NumberFormat.php',
+        'PhoneNumberType.php',
+        'PhoneNumberFormat.php',
+        'Matcher.php',
+        'CountryCodeSource.php',
+        'NumberParseException.php',
+        'ValidationResult.php',
+        'DefaultMetadataLoader.php',
+        'MatcherAPIInterface.php',
+        'MetadataLoaderInterface.php',
+      ),
+    ),
+    'integration files' => array(
+      'phone' => array(
+        'php' => array(
+          'includes/phone.libphonenumber.inc',
+        ),
+      ),
+    ),
+  );
+
+  dpm($libraries, '$libraries');
+  
+  return $libraries;
+}
+
+/**
+ * Loads the libphonenumber-for-php library.
+ *
+ * @param bool $mute
+ *   When TRUE, this function will not output an error message, or write to the
+ *   watchdog table. Defaults to FALSE.
+ *
+ * @return bool
+ *   TRUE if the library was loaded successfully. FALSE otherwise.
+ */
+function telephone_validation_libphonenumber_load($mute = FALSE) {
+  $result = &drupal_static(__FUNCTION__);
+
+  if ($result !== NULL) {
+    return $result;
+  }
+
+  $library = libraries_load('libphonenumber-for-php');
+  $result = $library['installed'] && $library['loaded'];
+
+  if (!$result && !$mute) {
+    watchdog('phone', 'The libphonenumber library is not installed. There will be no validation, or formatting of phone numbers unless it is installed. Download it from <a href="!url">here</a> and install it into sites/all/libraries/libphonenumber-for-php. Once installed, you may need to re-save any existing phone field settings, and phone field data may also need updating.', array('!url' => $library['download url']), WATCHDOG_ERROR);
+    drupal_set_message(t('The libphonenumber library is not installed. There will be no validation, or formatting of phone numbers unless it is installed. Download it from <a href="@url">here</a> and install it into sites/all/libraries/libphonenumber-for-php. Once installed, you may need to re-save any existing phone field settings, and phone field data may also need updating.', array('@url' => $library['download url'])), 'error');
+  }
+
+  return $result;
+}
+
+/**
+ * Detects whether the libphonenumber-for-php library is installed.
+ *
+ * @return bool
+ *   TRUE if the library is found. FALSE otherwise.
+ */
+function telephone_validation_libphonenumber_detect() {
+  $result = &drupal_static(__FUNCTION__);
+
+  if ($result !== NULL) {
+    return $result;
+  }
+
+  $library = libraries_detect('libphonenumber-for-php');
+  return $result = $library['installed'];
+}
+
+
+
+function telephone_validation_init() {
+    //dpm('xxx');
+    //telephone_validation_libphonenumber_load();
+}
+
+
+
+
+
+
+
+
+
+
+/**
+ * Form function to create an rooms_taxes entity.
+ *
+ * The pattern is:
+ * - Set up the form for the data that is specific to your
+ *   entity: the columns of your base table.
+ * - Call on the Field API to pull in the form elements
+ *   for fields attached to the entity.
+ */
+/**
+ * Implements hook_form_alter().
+ */
+function telephone_validation_form_alter(&$form, &$form_state, $form_id) {
+
+   // dpm($form_id, '$form_id');
+  switch ($form_id) {
+    case 'article_node_form':
+        
+        //dpm($form, '$form');
+        /*
+        $form['phone2'] = array(
+            '#type' => 'textfield',
+            '#title' => t('Phone2'),
+            '#default_value' => NULL,
+            
+            '#element_validate' => array('telephone_validation_element'),
+            '#entity_type' => 'node',
+            '#field_name'=> 'field_telephone',
+            '#bundle' => 'article',
+
+        );
+        */
+    break;
+  }
+  
+}
+
+
+/**
+ * Validation handler for rooms_taxes_add_form form.
+ *
+ * We pass things straight through to the Field API to handle validation
+ * of the attached fields.
+ */
+//function rooms_taxes_form_validate($form, &$form_state) {
+//  field_attach_form_validate('rooms_taxes', $form_state['values']['basic_entity'], $form, $form_state);
+//}
+
+
+/**
+ * Form submit handler: Submits basic_add_form information.
+ */
+//function rooms_taxes_form_submit($form, &$form_state) {
+//  $entity = $form_state['values']['basic_entity'];
+//  
+//  $entity->title = $form_state['values']['title'];
+//  $entity->name = $form_state['values']['name'];
+//  $entity->description = $form_state['values']['description'];
+//  $entity->rate = $form_state['values']['rate'];
+//  $entity->target = $form_state['values']['target'];
+//  $entity->status = $form_state['values']['status'];
+//  
+//  
+//  field_attach_submit('rooms_taxes', $entity, $form, $form_state);
+//  $entity = rooms_taxes_save($entity);
+//  $form_state['redirect'] = 'rooms_taxes/' . $entity->id;
+//}
+
+
+
+/**
+ * 
+ * @param type $source_field
+ *  $source_field = 'field_phone_test'
+ * @param type $sample_field
+ *  $sample_field = 'field_telephone'
+ * 
+ * telephone_validation_change_fieldType('phone_test', 'telephone', 'article');
+ * telephone_validation_change_fieldType('phone_old_2', 'telephone', 'article');
+ */
+function telephone_validation_change_fieldType_full($target_type, $sample_type, $sample_node_type, $use_predefined_settings = NULL) {
+    
+    $target_field = 'field_' . $target_type;
+    $sample_field = 'field_' . $sample_type;
+    
+    // Works!
+    // Update the storage sample target table field configuration to the target one
+    $tables = array('field_data', 'field_revision');
+    foreach ($tables as $table) {
+      /*  
+      // Fetch the sample table field structure configuration.
+      $tablename = $table .'_'. $sample_field;
+      $fieldname = $sample_field .'_value';
+      $sample_table_structure = drupal_get_schema($tablename);
+      $sample_field_structure = $sample_table_structure['fields'][$fieldname];
+      */
+      // OR use the predefined value:
+      $sample_field_structure = array(
+        'type' => 'varchar',
+        'length' => 256,
+        'not null' => FALSE,
+      );
+    
+      // Update the storage target table field configuration
+      $tablename = $table .'_'. $target_field;
+      $fieldname = $target_field .'_value';
+      db_change_field($tablename, $fieldname, $fieldname, $sample_field_structure);
+    }
+    
+    
+    // Update the storage tables fields configuration
+    // Example
+    /*
+    $tables = array('field_data', 'field_revision');
+    foreach ($tables as $table) {
+      $tablename = $table .'_'. $target_field;
+      $fieldname = $target_field .'_value';
+      
+//      db_change_field($tablename, $fieldname, $fieldname, array(
+//        'type' => 'numeric',
+//        'precision' => 10,
+//        'scale' => 2,
+//        'not null' => FALSE,
+//      ));
+      
+      db_change_field($tablename, $fieldname, $fieldname, array(
+        'type' => 'varchar',  
+        'length' => 199,
+        'description' => 'xxx.',
+        'not null' => FALSE,
+      ));
+    }
+   */
+    
+    
+    
+    
+    
+    // Fetch the initial target field configuration.
+    $target_field_config = db_query("SELECT data FROM {field_config} WHERE field_name = :field_name", array(
+        ':field_name' => $target_field,
+      ))
+      ->fetchObject();
+    $target_data = unserialize($target_field_config->data);
+
+    dpm($target_data,'$target_data field config');
+    
+
+    // Fetch the sample field configuration
+    /*
+    $sample_field_config = db_query("SELECT data FROM {field_config} WHERE field_name = :field_name", array(
+        ':field_name' => $sample_field,
+      ))
+      ->fetchObject();
+    $sample_data = unserialize($sample_field_config->data);
+    dpm($sample_data,'$sample_data field config');
+    $sample_data_settings = $sample_data['settings'];
+    */
+    // OR use the predefined value:
+    $sample_data_settings = array();
+    
+    // We will copy this settings to the target field
+    
+    // Works!
+    // Update the settings entry
+    $target_data['settings'] = $sample_data_settings;
+    // Store the new target field config, update the field type at the same time.
+    
+    db_update('field_config')
+      ->fields(array(
+        'data' => serialize($target_data),
+        'type' => $sample_type,
+      ))
+      ->condition('field_name', $target_field)
+      ->execute();    
+    
+    // Original example
+    /*
+    $target_data['settings'] = array(
+      'precision' => 10,
+      'scale' => 2,
+      'decimal_separator' => '.',
+    );
+
+
+    // Store the new target field config, update the field type at the same time.
+    db_update('field_config')
+      ->fields(array(
+        'data' => serialize($target_data),
+        'type' => 'number_decimal',
+      ))
+      ->condition('field_name', $target_field)
+      ->execute();    
+    */
+    
+    
+    
+    
+    
+            
+    // Fetch the sample field instance data
+    /*
+    $sample_field_config_instance = db_query("SELECT data FROM {field_config_instance}
+                                       WHERE field_name = :field_name
+                                       AND entity_type = :entity_type
+                                       AND bundle = :bundle", array(
+        ':field_name' => $sample_field,
+        ':entity_type' => 'node',
+        ':bundle' => $sample_node_type,
+      ))
+      ->fetchObject();
+    $sample_data = unserialize($sample_field_config_instance->data);
+    dpm($sample_data, '$sample_data field config instance');
+    */
+    // OR use the predefined value:
+    $sample_data = array(
+        'widget' => array(
+            'weight' => 31,
+            'type' => 'telephone_default',
+            'module' => 'telephone',
+            'active' => 1,
+            'settings' => array(
+                'placeholder' => '',
+                'telephone_validation' => array(
+                    'valid_format' => 0,
+                    'valid_countries' => array(),
+                    'store_format' => 1,
+                ),
+            ), 
+        ),
+        'settings' => array(
+            'user_register_form' => FALSE,
+        ),
+        'display' => array(
+            'default' => array(
+                'label' => 'above',
+                'type' => 'text_plain',
+                'settings' => array(),
+                'module' => 'text',
+                'weight' => 11,
+            ),
+        ),
+    );
+    
+    
+    // If you are confident about what bundles have instances of this field you can
+    // go straight to the db_query with a hardcoded entity_type / bundle.
+    $instances = field_info_field_map();
+    //dpm($instances, '$instances');
+    
+    
+    foreach ($instances[$target_field]['bundles'] as $entity_type => $bundles) {
+        foreach ($bundles as $bundle) {
+
+            // Fetch the initial field instance data
+            $target_field_config_instance = db_query("SELECT data FROM {field_config_instance}
+                                               WHERE field_name = :field_name
+                                               AND entity_type = :entity_type
+                                               AND bundle = :bundle", array(
+                ':field_name' => $target_field,
+                ':entity_type' => $entity_type,
+                ':bundle' => $bundle,
+              ))
+              ->fetchObject();
+            $target_data = unserialize($target_field_config_instance->data);
+
+            dpm($target_data, '$target_data field config instance');
+            
+            // Preserve the weight of an element
+            $element_weight = $target_data['display']['default']['weight'];
+            
+            $target_data['widget'] = $sample_data['widget'];
+            $target_data['settings'] = $sample_data['settings'];
+            $target_data['display'] = $sample_data['display'];
+            $target_data['display']['default']['weight'] = $element_weight;
+            
+            // Store it back to the database
+            db_update('field_config_instance')
+              ->fields(array('data' => serialize($target_data)))
+              ->condition('field_name', $target_field)
+              ->condition('entity_type', $entity_type)
+              ->condition('bundle', $bundle)
+              ->execute();
+            
+            
+            /*
+            // Sample
+            // Update it with the new display type
+            $target_data['display']['default']['type'] = 'number_decimal';
+
+            // Store it back to the database
+            db_update('field_config_instance')
+              ->fields(array('data' => serialize($data)))
+              ->condition('field_name', $field)
+              ->condition('entity_type', $entity_type)
+              ->condition('bundle', $bundle)
+              ->execute();
+            */
+
+        }
+    }
+    
+    cache_clear_all('schema:', 'cache', TRUE);
+    field_cache_clear();
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * 
+ * @param type $field_type
+ * @return array
+ */
+function telephone_validation_get_fieldType_default_values($field_type) {
+    $default_values = NULL;
+    switch ($field_type) {
+        
+        case 'telephone':
+            
+            $default_values = array(
+                'sample_field_config_data_settings' => array(),
+                'sample_config_instance_data' => array(
+                    'widget' => array(
+                        //'weight' => 31,
+                        'type' => 'telephone_default',
+                        'module' => 'telephone',
+                        'active' => 1,
+                        'settings' => array(
+                            'placeholder' => '',
+                            'telephone_validation' => array(
+                                'valid_format' => 0,
+                                'valid_countries' => array(),
+                                'store_format' => 1,
+                            ),
+                        ), 
+                    ),
+                    'settings' => array(
+                        'user_register_form' => FALSE,
+                    ),
+                    'display' => array(
+                        'default' => array(
+                            'label' => 'above',
+                            'type' => 'text_plain',
+                            'settings' => array(),
+                            'module' => 'text',
+                            //'weight' => 11,
+                        ),
+                    ),
+                ),
+            );
+            
+            break;
+        
+        
+        case 'phone':
+            
+            $default_values = array(
+                'sample_field_config_data_settings' => array(
+                    'country' => 'int',
+                    'profile2_private' => FALSE,
+                ),
+                'sample_config_instance_data' => array(
+                    'widget' => array(
+                        'active' => 0,
+                        'module' => 'phone',
+                        'type' => 'phone_textfield',                        
+                        'settings' => array(
+                            'maxlength_js_label' => 'Content limited to @limit characters, remaining...',
+                        ),
+                        //'weight' => 1,
+                    ),
+                    'settings' => array(
+                        'ca_phone_parentheses' => 1,
+                        'ca_phone_separator' => '-',
+                        'phone_country_code' => 1,
+                        'phone_default_country_code' => 234,
+                        'phone_int_max_length' => 15,
+                        'user_register_form' => FALSE,
+                    ),
+                    'display' => array(
+                        'default' => array(
+                            'label' => 'above',
+                            'module' => 'phone',
+                            'settings' => array(),
+                            'type' => 'phone',
+                            //'weight' => 7,
+                        ),
+                    ),
+                ),
+            );
+            
+            break;
+    }
+    
+    return $default_values;
+}
+
+
+/**
+ * 
+ * @param type $target_field_shortname
+ *  example 
+ *      'diyh_telephone'   -> hotel node type, old phone format, initially unlimited values
+ *      'diyh_mobile_number' -> user main profile field, initially old phone format, 1 value max
+ *      '_billing_phone_number' -> commerce customer billing profile, initially simple text format, 1 value
+ * 
+ * @param type $sample_type
+ * example 
+ *      'telephone'
+ * 
+ */
+function telephone_validation_change_fieldType($target_field_shortname, $sample_type, $test_mode = FALSE) {
+    
+    $target_field = 'field_' . $target_field_shortname;
+    
+    $default_sample_values = telephone_validation_get_fieldType_default_values($sample_type);
+    dpm($default_sample_values, '$default_sample_values for "' . $sample_type . '"');
+    
+    // 1. No need to change field_data_field_<$target_field_shortname> and field_revision_field_<$target_field_shortname>
+    //    fields format (type, length, default value, etc)
+    //    because they are the same with the target Telephone type fields format, like this:
+    //    $sample_field_structure = array(
+    //        'type' => 'varchar',
+    //        'length' => 256,
+    //        'not null' => FALSE,
+    //    );
+
+    
+    
+    
+    // 2. Change field_config table settings
+
+    // Fetch the initial target field configuration (that should be changed to a new Telephone type config)
+    $target_field_config = db_query("SELECT data FROM {field_config} WHERE field_name = :field_name", array(
+        ':field_name' => $target_field,
+      ))
+      ->fetchObject();
+    $target_data = unserialize($target_field_config->data);
+
+    dpm($target_data,'$target_data field config');
+
+    // Preserve the value profile2_private of the field, if it's been set
+    if (array_key_exists('profile2_private', $target_data['settings'])) {
+        $default_sample_values['sample_field_config_data_settings']['profile2_private'] = $target_data['settings']['profile2_private'];
+    }
+    $target_data['settings'] = $default_sample_values['sample_field_config_data_settings'];
+    dpm($target_data, '$target_data field config TO BE CHANGED');
+    
+    if (!$test_mode) {
+        // Update the target field config settings and a field type with a new default sample data
+        db_update('field_config')
+          ->fields(array(
+            'data' => serialize($target_data),
+            'type' => $sample_type,
+          ))
+          ->condition('field_name', $target_field)
+          ->execute();    
+    }
+
+    
+    
+    
+    // 3. Change field_config_instance table settings
+    
+    // Define a sample data
+    $sample_config_instance_data = $default_sample_values['sample_config_instance_data'];
+    
+    // Change settings for each bundle (node type) where the target field might appear
+    $instances = field_info_field_map();
+    dpm($instances, 'All $instances');
+    foreach ($instances[$target_field]['bundles'] as $entity_type => $bundles) {
+        foreach ($bundles as $bundle) {
+
+            // Fetch the initial field instance data
+            $target_field_config_instance = db_query("SELECT data FROM {field_config_instance}
+                                               WHERE field_name = :field_name
+                                               AND entity_type = :entity_type
+                                               AND bundle = :bundle", array(
+                ':field_name' => $target_field,
+                ':entity_type' => $entity_type,
+                ':bundle' => $bundle,
+              ))
+              ->fetchObject();
+            $target_data = unserialize($target_field_config_instance->data);
+
+            dpm($target_data, '$target_data field config instance');
+            
+            // Preserve the weight of the target field element
+            $target_display_default_weight = $target_data['display']['default']['weight'];
+            $target_widget_weight = $target_data['widget']['weight'];
+            
+            $target_data['widget'] = $sample_config_instance_data['widget'];
+            $target_data['settings'] = $sample_config_instance_data['settings'];
+            $target_data['display']['default'] = $sample_config_instance_data['display']['default'];
+            // Restore the initial target field values for weight
+            $target_data['display']['default']['weight'] = $target_display_default_weight;
+            $target_data['widget']['weight'] = $target_widget_weight;
+            
+            dpm($target_data, '$target_data field config instance TO BE CHANGED');
+
+            if (!$test_mode) {
+                // Store the value back to the database
+                db_update('field_config_instance')
+                  ->fields(array('data' => serialize($target_data)))
+                  ->condition('field_name', $target_field)
+                  ->condition('entity_type', $entity_type)
+                  ->condition('bundle', $bundle)
+                  ->execute();
+            }
+
+        }
+    }
+    
+}
+
+
+
+
+
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function telephone_validation_form_field_ui_field_edit_form_alter(&$form, &$form_state) {
+  // Get field and instance.
+  $field = $form['#field'];
+  $instance = $form['#instance'];
+
+  if ($instance['widget']['type'] == 'telephone_default' && !$field['locked']) {
+
+    if (!isset($instance['widget']['settings']['telephone_validation'])) {
+      // If that's a brand new instance initialize settings array.
+      $instance['widget']['settings']['telephone_validation'] = array();
+    }
+    $settings = $instance['widget']['settings']['telephone_validation'];
+    // Ensure we have at least default values.
+    $settings += array(
+      'valid_format' => \libphonenumber\PhoneNumberFormat::E164,
+      'valid_countries' => array(),
+      'store_format' => \libphonenumber\PhoneNumberFormat::E164,
+    );
+
+    if (isset($form_state['values']['instance']['widget']['settings']['telephone_validation'])) {
+      $form_settings = $form_state['values']['instance']['widget']['settings']['telephone_validation'];
+    }
+
+    if (!isset($form['instance']['widget']['settings'])) {
+      // Initialize settings array.
+      $form['instance']['widget']['settings'] = array();
+    }
+
+    // Add parent fieldset for module settings.
+    $form['instance']['widget']['settings']['telephone_validation'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Validation'),
+    );
+
+    // Right now format field supports E164 format only (just to be sure that
+    // phone validator will work correctly).
+    $form['instance']['widget']['settings']['telephone_validation']['valid_format'] = array(
+      '#type' => 'select',
+      '#title' => t('Valid telephone format'),
+      '#description' => t('It is recommended to use E164 validation format. Validator will discover phone number country of origin automatically. If you want to limit field instance to one country only you can change it National format and choose country in next field.'),
+      '#default_value' => $settings['valid_format'],
+      '#options' => array(
+        \libphonenumber\PhoneNumberFormat::E164 => t('E164'),
+        \libphonenumber\PhoneNumberFormat::NATIONAL => t('National'),
+      ),
+      '#ajax' => array(
+        'callback' => '_telephone_validation_valid_countries_ajax_callback',
+        'wrapper' => 'telephone-validation-valid-countries',
+        'method' => 'replace',
+      ),
+    );
+
+    $default_value = isset($form_settings['valid_format']) ? $form_settings['valid_format'] : $settings['valid_format'];
+    $form['instance']['widget']['settings']['telephone_validation']['valid_countries'] = array(
+      '#type' => 'select',
+      '#title' => t('List of valid countries'),
+      '#description' => t('If no country selected all countries are valid.'),
+      '#default_value' => $settings['valid_countries'],
+      '#multiple' => ($default_value == \libphonenumber\PhoneNumberFormat::NATIONAL) ? FALSE : TRUE,
+      '#options' => _telephone_validation_get_country_codes(),
+      '#prefix' => '<div id="telephone-validation-valid-countries">',
+      '#suffix' => '</div>',
+    );
+
+    $form['instance']['widget']['settings']['telephone_validation']['store_format'] = array(
+      '#type' => 'select',
+      '#title' => t('Store format'),
+      '#description' => t('It is highly recommended to store data in E164 format. That is international format with no whitespaces preceded by plus and country code. Use other formats only if you know what you are doing.'),
+      '#default_value' => $settings['store_format'],
+      '#options' => array(
+        \libphonenumber\PhoneNumberFormat::E164 => t('E164'),
+        \libphonenumber\PhoneNumberFormat::NATIONAL => t('National'),
+        \libphonenumber\PhoneNumberFormat::INTERNATIONAL => t('International'),
+      ),
+    );
+
+  }
+}
+
+/**
+ * Returns valid countries field on ajax request.
+ */
+function _telephone_validation_valid_countries_ajax_callback($form, $form_state) {
+  return $form['instance']['widget']['settings']['telephone_validation']['valid_countries'];
+}
+
+/**
+ * Implements hook_field_widget_WIDGET_TYPE_form_alter().
+ */
+function telephone_validation_field_widget_telephone_default_form_alter(&$element, &$form_state, $context) {
+  $element['value']['#element_validate'] = array('telephone_validation_element');
+}
+
+/**
+ * Telephone element validation.
+ */
+function telephone_validation_element($element, &$form_state) {
+    //dpm($element, '$element');
+    //dpm($form_state, '$form_state');
+  $value = $element['#value'];
+
+  // Do validation only if value is not empty.
+  if (!empty($value)) {
+    $instance = field_info_instance($element['#entity_type'], $element['#field_name'], $element['#bundle']);
+
+    $settings = _telephone_validation_get_instance_settings($instance);
+
+    try {
+      $number = _telephone_validation($value, $settings);
+    }
+    catch (Exception $e) {
+      form_error($element, t("%name value is invalid: <br/>" . $e->getMessage(), array('%name' => $instance['label'])));
+      return FALSE;
+    }
+
+    // If number looks ok, use google libphonenumber library to set correct
+    // output format.
+    $phone_util = \libphonenumber\PhoneNumberUtil::getInstance();
+
+    // Change field value and store it in database in unified format.
+    form_set_value($element, $phone_util->format($number, $settings['store_format']), $form_state);
+  }
+}
+
+/**
+ * Get default values for telephone field.
+ *
+ * @return array
+ *   Returns array of default field settings.
+ */
+function _telephone_validation_get_default_settings() {
+  return array(
+    'valid_format' => \libphonenumber\PhoneNumberFormat::E164,
+    'valid_countries' => array(),
+    'store_format' => \libphonenumber\PhoneNumberFormat::E164,
+  );
+}
+
+/**
+ * Returns settings array for given instance.
+ *
+ * @param array $instance
+ *   Field instance.
+ *
+ * @return array
+ *   Array of settings. Default ones if it is not set.
+ */
+function _telephone_validation_get_instance_settings($instance = array()) {
+  $settings = isset($instance['widget']['settings']['telephone_validation']) ? $instance['widget']['settings']['telephone_validation'] : array();
+  $settings += _telephone_validation_get_default_settings();
+  return $settings;
+}
+
+/**
+ * Get list of all available countries with codes.
+ *
+ * @return array
+ *   Returns list of all countries from iso.inc file cross referenced with
+ *   available country codes.
+ */
+function _telephone_validation_get_country_codes() {
+  include_once DRUPAL_ROOT . '/includes/iso.inc';
+  $phone_util = \libphonenumber\PhoneNumberUtil::getInstance();
+  $regions = array();
+  foreach (_country_get_predefined_list() as $region => $name) {
+    $region_meta = $phone_util->getMetadataForRegion($region);
+    if (is_object($region_meta)) {
+      $regions[$region] = $name . ' - +' . $region_meta->getCountryCode() . ' ' . $region_meta->getLeadingDigits();
+    }
+  }
+  return $regions;
+}
+
+/**
+ * Implements hook_field_info_alter().
+ *
+ * Defines default property types for telephone field type.
+ */
+function telephone_validation_field_info_alter(&$field_info) {
+  $field_info['telephone']['property_callbacks'][] = 'telephone_validation_metadata_field_telephone_property_callback';
+}
+
+/**
+ * Additional callback to adapt the property info for telephone fields.
+ *
+ * @see entity_metadata_field_entity_property_info()
+ * @see entity_field_info_alter()
+ * @see entity_property_text_formatted_info()
+ */
+function telephone_validation_metadata_field_telephone_property_callback(&$info, $entity_type, $field, $instance, $field_type) {
+  $property = &$info[$entity_type]['bundles'][$instance['bundle']]['properties'][$field['field_name']];
+  $property['validation callback'] = '_telephone_validation_metadata_field_property_validation';
+  $property['setter callback'] = '_telephone_validation_metadata_field_property_set';
+}
+
+/**
+ * Callback for setting field property values.
+ *
+ * @see entity_metadata_field_property_set().
+ */
+function _telephone_validation_metadata_field_property_set($entity, $name, $value, $langcode, $entity_type, $info) {
+  $field = field_info_field($name);
+  $columns = array_keys($field['columns']);
+  $langcode = entity_metadata_field_get_language($entity_type, $entity, $field, $langcode);
+  $values = $field['cardinality'] == 1 ? array($value) : (array) $value;
+  list(, , $bundle) = entity_extract_ids($entity_type, $entity);
+  $instance = field_info_instance($entity_type, $name, $bundle);
+  $settings = _telephone_validation_get_instance_settings($instance);
+
+  // If number looks ok, use google libphonenumber library to set correct
+  // output format.
+  $phone_util = \libphonenumber\PhoneNumberUtil::getInstance();
+
+  $items = array();
+  foreach ($values as $delta => $value) {
+    if (isset($value)) {
+      $default_region = ($settings['valid_format'] == \libphonenumber\PhoneNumberFormat::NATIONAL) ? $settings['valid_countries'] : NULL;
+      $number = $phone_util->parse($value, $default_region);
+      $items[$delta][$columns[0]] = $phone_util->format($number, $settings['store_format']);
+    }
+  }
+  $entity->{$name}[$langcode] = $items;
+
+  // Empty the static field language cache, so the field system picks up any
+  // possible new languages.
+  drupal_static_reset('field_language');
+}
+
+/**
+ * Validation callback wrapper to set only valid data values.
+ */
+function _telephone_validation_metadata_field_property_validation($items, $context) {
+
+  // Normalize incoming data.
+  $items = is_array($items) ? $items : array($items);
+
+  // Get parent entity info.
+  $entity_info = $context['parent']->info();
+  $entity_type = $entity_info['type'];
+
+  // Get field instance.
+  $instance = field_info_instance($entity_type, $context['name'], $context['parent']->getBundle());
+
+  // Load widget settings.
+  $settings = _telephone_validation_get_instance_settings($instance);
+
+  foreach ($items as $value) {
+    // Perform telephone validation on every value.
+    _telephone_validation($value, $settings);
+  }
+
+  // Return TRUE if everything seems to be ok.
+  return TRUE;
+}
+
+/**
+ * Validation callback.
+ *
+ * @param string $value
+ *   Raw field value.
+ * @param array $settings
+ *   Array of field settings.
+ *
+ * @return \libphonenumber\PhoneNumber
+ *   Returns phone number object if number is valid.
+ *
+ * @throws \Exception
+ *   Throws exception if number is invalid.
+ */
+function _telephone_validation($value, $settings = array()) {
+  // Be sure we have default settings if user didn't submit field settings
+  // form yet.
+  $settings += _telephone_validation_get_default_settings();
+
+  // If number looks more or less ok, use google libphonenumber library to
+  // parse  it.
+  $phone_util = \libphonenumber\PhoneNumberUtil::getInstance();
+
+  // If number will be incorrect (there will be no way to parse it) we will
+  // get an exception here.
+  $default_region = ($settings['valid_format'] == \libphonenumber\PhoneNumberFormat::NATIONAL) ? $settings['valid_countries'] : NULL;
+  $number = $phone_util->parse($value, $default_region);
+  
+  // If can be parsed do validation.
+  if (!$phone_util->isValidNumber($number)) {
+    // a4s fix.
+    //throw new Exception('Field value is invalid.');
+    throw new Exception('Phone number format or country code is invalid.');
+  }
+
+  // If valid_countries element is not empty and default region can be loaded
+  // do region matching validation.
+  // This condition is always TRUE for national phone number format.
+  if (!empty($settings['valid_countries']) && $default_region = $phone_util->getRegionCodeForNumber($number)) {
+    // If number should belong to one of selected countries.
+    // This condition is always TRUE for national phone number format.
+    if (!isset($settings['valid_countries'][$default_region]) && $settings['valid_countries'] != $default_region) {
+      throw new Exception('Field does not support phone number from your country.');
+    }
+  }
+
+  return $number;
+}

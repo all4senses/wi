@@ -1,0 +1,34 @@
+<?php
+
+/**
+ * @file
+ * Install/Update/Uninstall functions for phone module
+ */
+
+/**
+ * Implements hook_field_schema().
+ */
+function phone_field_schema($field) {
+  return array(
+    'columns' => array(
+      'value' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+      ),
+    ),
+  );
+}
+
+
+// TODO: data migration from the old DB structure, could be tough..
+
+
+/**
+ * Convert existing Phone fields format to a new Telephone field format.
+ */
+function phone_update_7001() {
+    phone_change_fieldType('phone_hotel_1', 'telephone'); 
+    phone_change_fieldType('phone_profile_1', 'telephone'); 
+    phone_change_fieldType('phone_text_1', 'telephone'); 
+}

@@ -1,0 +1,41 @@
+/* prevent input fields from being set to a percentage, such as 95% */
+div.form-item input.phone-field-textfield {
+  width: auto;
+}
+
+#edit-field-diyh-telephone-country {
+    width:70px;
+}
+div.form-item-field-diyh-telephone-country,
+div.form-item-profile-main-field-diyh-telephone-country {
+    width:70px;
+    float:left;
+    margin-right:20px;
+}
+
+#edit-profile-main-field-diyh-telephone-country {
+    width:70px;
+}
+
+#profile-main-field-diyh-mobile-number-add-more-wrapper {
+    float:left;
+}
+
+#edit-profile-main-field-diyh-mobile-number {
+    float:left;
+}
+
+#field-diyh-telephone-country-plus {
+    font-size: 15px;
+    font-weight: normal;
+    color: #535353;
+    text-align: center;
+    width: 10px;
+    float: left;
+    margin-right: 5px;
+    padding-top: 28px;
+}
+
+#profile-main-field-diyh-last-name-add-more-wrapper {
+    clear:both;
+}

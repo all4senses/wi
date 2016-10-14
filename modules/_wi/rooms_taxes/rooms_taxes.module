@@ -124,6 +124,13 @@ function rooms_taxes_uri($basic) {
  */
 function rooms_taxes_menu() {
   
+  $items['test'] = array(
+    'title' => 'Test...',
+    'page callback' => 'rooms_taxes_test',
+    //'page arguments' => array('rooms_taxes_hs_form'),
+    'access arguments' => array('access content'),
+    'type' => MENU_LOCAL_TASK,
+  );
   
   $items['hs'] = array(
     'title' => 'Edit',
@@ -832,4 +839,9 @@ $form['submit'] = array(
 function rooms_taxes_hs_form_submit($form, &$form_state) {
   dpm($form_state['values']);
   //$form_state['redirect'] = 'rooms_taxes/' . $entity->id;
+}
+
+function rooms_taxes_test() {
+    $phoneNumberGeocoder = PhoneNumberOfflineGeocoder::getInstance();
+    return 'xxx uyyy';
 }

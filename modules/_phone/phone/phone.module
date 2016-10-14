@@ -1,0 +1,687 @@
+<?php
+
+/**
+ * Function which holds an array of supported countries.
+ *
+ * @param string $countrycode
+ * @return boolean Returns the whole array of countries $countrycode isn't specified and a country name for when it is specified.
+ */
+function phone_countries($code = NULL) {
+  static $countries;
+
+  if (!isset($countries)) {
+   $countries = array(
+      'int' => 'International Phone Numbers per E.123',
+      'fr' => 'France',
+      'be' => 'Belgium',
+      'it' => 'Italy',
+      'el' => 'Greece',
+      'ch' => 'Switzerland',
+      'ca' => 'US & Canada',
+      'cr' => 'Costa Rica',
+      'pa' => 'Panama',
+      'gb' => 'Great Britain - United Kingdom',
+      'ru' => 'Russia',
+      'ua' => 'Ukraine',
+      'es' => 'Spain',
+      'au' => 'Australia',
+      'cs' => 'Czech Republic',
+      'hu' => 'Hungary',
+      'pl' => 'Poland - mobiles only',
+      'nl' => 'Netherland',
+      'se' => 'Sweden',
+      'za' => 'South Africa',
+      'il' => 'Israel',
+      'nz' => 'New Zealand',
+      'br' => 'Brazil',
+      'cl' => 'Chile',
+      'cn' => 'China',
+      'hk' => 'Hong-Kong',
+      'mo' => 'Macao',
+      'ph' => 'The Philippines',
+      'sg' => 'Singapore',
+      'sn' => 'Senegal',
+      'jo' => 'Jordan',
+      'eg' => 'Egypt',
+      'pk' => 'Pakistan',
+       //*** added in sprint 12...
+      'bf' => 'Burkina Faso',
+      'cm' => 'Cameroon',
+      'gm' => 'Gambia',
+      'gh' => 'Ghana',
+      'ci' => 'Ivory Coast',
+      'ke' => 'Kenya',
+      'lr' => 'Liberia',
+      'na' => 'Namibia',
+      'ne' => 'Niger',
+      'sl' => 'Sierra Leone',
+      'tz' => 'Tanzania',
+      'tg' => 'Togo',
+    );
+  }
+  return ($code === NULL) ? $countries : (isset($countries[$code]) ? $countries[$code] : NULL);
+}
+
+/**
+ * @defgroup field_api_hooks Field API Hook Implementations
+ */
+
+/**
+ * Implementation of hook_field_info().
+ */
+function phone_field_info() {
+  return array(
+    'phone' => array(
+      'label' => t('Phone Number'),
+      'instance_settings' => array(
+        'phone_country_code' => 0,
+        'phone_default_country_code' => '1',
+        'phone_int_max_length' => 15,
+        'ca_phone_separator' => '-',
+        'ca_phone_parentheses' => 1,
+      ),
+      'default_formatter' => 'phone',
+      'default_widget' => 'phone_textfield',
+      'property_type' => 'text',
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_is_empty().
+ */
+function phone_field_is_empty($item, $field) {
+  return empty($item['value']);
+}
+
+/**
+ * Implements hook_field_settings_form().
+ */
+function phone_field_settings_form($field, $instance, $has_data) {
+  $settings = $field['settings'];
+
+  $form = array();
+  $form['country'] = array(
+    '#type' => 'select',
+    '#title' => t('Country'),
+    '#options' => phone_countries(),
+    '#default_value' => isset ($settings['country']) ? $settings['country'] : NULL,
+    '#description' => t('Which country-specific rules should this field be validated against and formatted according to.'),
+    '#disabled' => $has_data,
+    '#required' => TRUE,
+  );
+
+  return $form;
+}
+
+/**
+ * Implements hook_field_instance_settings_form().
+ */
+function phone_field_instance_settings_form($field, $instance) {
+  $settings = $instance['settings'];
+
+  $form['phone_country_code'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Add the country code if not filled by the user'),
+    '#default_value' => $settings['phone_country_code'],
+  );
+
+  if ($field['settings']['country'] == 'int') {
+    $form['phone_int_help'] = array(
+      '#type' => 'markup',
+      '#value' => t('International phone numbers are in the form +XX YYYYYYY where XX is a country code and YYYYYYY is the local number. This field type is based off of the <a href="http://www.itu.int/rec/T-REC-E.123/en">E.123 specification</a>.'),
+    );
+    $form['phone_default_country_code'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Default country code to add to international numbers without one (omit + sign)'),
+      '#default_value' => $settings['phone_default_country_code'],
+    );
+    $form['phone_int_max_length'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Maximum length of international numbers, according to the ITU this is 15'),
+      '#default_value' => $settings['phone_int_max_length'],
+    );
+  }
+
+  if ($field['settings']['country'] == 'ca') {
+    $form['ca_phone_separator'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Separator'),
+      '#default_value' => $settings['ca_phone_separator'],
+      '#size' => 2,
+    );
+    $form['ca_phone_parentheses'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Use parentheses around area code'),
+      '#default_value' => $settings['ca_phone_parentheses'],
+    );
+  }
+  return $form;
+}
+
+/**
+ * Implements hook_field_validate().
+ */
+function phone_field_validate($entity_type, $entity, $field, $instance, $langcode, $items, &$errors) {
+  foreach ($items as $delta => $item) {
+    if (isset($item['value']) && $item['value'] != '') {
+      $ccode = $field['settings']['country'];
+      //$item['value'] = trim(preg_replace('/[^0-9]/','',$item['value']));
+      $prefix = !empty($_POST['field_diyh_telephone_country']) ? $_POST['field_diyh_telephone_country'] : (!empty($_POST['profile_main']['field_diyh_telephone_country']) ? $_POST['profile_main']['field_diyh_telephone_country'] : NULL);
+      $value = '+'.$prefix.' '.$item['value'];
+      if (!$prefix || !valid_phone_number($ccode, $value)) {
+        //$country = phone_country_info($ccode);
+        $country = phone_country_info($ccode,$prefix);
+        if (empty($country)) {
+          $errors[$field['field_name']][$langcode][$delta][] = array(
+            'error' => 'phone_invalid_number',
+            'message' => t("Invalid country code!"),
+          );
+        } else {
+          $errors[$field['field_name']][$langcode][$delta][] = array(
+            'error' => 'phone_invalid_number',
+            'message' => t($country['error'], array('%value' => $value)),
+          );
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_field_presave().
+ */
+function phone_field_presave($entity_type, $entity, $field, $instance, $langcode, &$items) {
+  $ccode = $field['settings']['country'];
+  if (phone_countries($ccode) !== NULL) {
+    foreach ($items as $delta => $item) {
+      if (isset($item['value'])) {
+        $items[$delta]['value'] = format_phone_number($ccode, $item['value'], $instance['settings']);
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_field_formatter_info().
+ */
+function phone_field_formatter_info() {
+  return array(
+    'phone' => array(
+      'label' => t('Default'),
+      'field types' => array('phone'),
+    )
+  );
+}
+
+/**
+ * Implements hook_field_formatter_view().
+ */
+function phone_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  $element = array();
+  foreach ($items as $delta => $item) {
+    $text = '';
+
+    if (isset($item['value'])) {
+      $text = check_plain($item['value']);
+      // iPhone Support
+      if (strpos($_SERVER['HTTP_USER_AGENT'], 'iPhone') !== FALSE) {
+         $text = '<a href="tel:' . $text . '">' . $text . '</a>';
+      }
+    }
+    $element[$delta]['#markup'] = $text;
+  }
+  return $element;
+}
+
+/**
+ * Implements hook_field_widget_info().
+ */
+function phone_field_widget_info() {
+  return array(
+    'phone_textfield' => array(
+      'label' => t('Text field'),
+      'field types' => array('phone'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_widget_form().
+ */
+function phone_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
+  if (isset($items[$delta]['value'])) {
+	$phonenumber = '';
+    $tmp   = explode(' ', $items[$delta]['value']);
+    $ccode = ltrim($tmp[0], '+');
+    //$phonenumber = $tmp[1];
+	$phonenumber = trim(strstr($items[$delta]['value'], ' '));
+	$phonenumber = preg_replace('/^' . $ccode . '(.+)/si', '${1}', $phonenumber);
+  }
+
+  /*
+  $form['field_diyh_telephone_country_plus'] = array(
+      '#markup' => '<div id="field-diyh-telephone-country-plus">+</div>',
+      '#weight' => $element['#weight'],
+  );*/
+
+  $form['field_diyh_telephone_country'] = array(
+    '#prefix'        => '<div id="field-diyh-telephone-country-plus">+</div>',
+    '#type'          => 'textfield',
+    '#title'         => 'Country Code',
+    '#default_value' => isset($ccode) ? $ccode : '',
+    //'#required'      => TRUE,
+    '#size'          => 4,
+    '#maxlength'     => 4,
+    '#weight'        => !empty($element['#weight']) ? $element['#weight'] : NULL,
+  );
+
+  $element += array(
+    '#type'          => 'textfield',
+    '#title'         => $element['#title'],
+    '#description'   => $element['#description'],
+    '#default_value' => isset($phonenumber) ? $phonenumber : '',
+    '#required'      => $element['#required'],
+    '#size'          => 17,
+    '#maxlength'     => (
+    $field['settings']['country'] == 'int' ?
+      (isset($instance['settings']['phone_int_max_length']) ? $instance['settings']['phone_int_max_length'] : NULL)
+      : NULL
+    ),
+    '#weight'        => !empty($element['#weight']) ? $element['#weight'] : NULL,
+  );
+
+  drupal_add_css(drupal_get_path('module', 'phone') . '/theme/phone.css', array('group'      => CSS_DEFAULT,
+                                                                                'every_page' => TRUE
+  ));
+  return array('value' => $element);
+}
+
+/**
+ * @} End of "defgroup field_api_hooks".
+ */
+
+
+/**
+ * @defgroup other_hooks Other Hook Implementations
+ */
+
+/**
+ * Implements hook_content_migrate_field_alter().
+ *
+ * Use this to tweak the conversion of field settings
+ * from the D6 style to the D7 style for specific
+ * situations not handled by basic conversion,
+ * as when field types or settings are changed.
+ */
+function phone_content_migrate_field_alter(&$field_value, $instance_value) {
+  module_load_include('inc', 'phone', 'phone.migrate');
+  phone_field_alter($field_value, $instance_value);
+}
+
+/**
+* Implementation of hook token_list
+*/
+function phone_token_list($type = 'all') {
+  if ($type == 'field' || $type == 'all') {
+    $tokens['phone']['raw'] = t('Raw phone numbers');
+    $tokens['phone']['formatted'] = t('Formatted phone numbers');
+    return $tokens;
+  }
+}
+
+/**
+* Implementation of hook token_values
+*/
+function phone_token_values($type, $object = NULL, $options = array()) {
+  if ($type == 'field') {
+    $item = $object[0];
+    $tokens['raw'] = $item['value'];
+    $tokens['formatted'] = $item['view'];
+    return $tokens;
+  }
+}
+
+/**
+ * Implementation of hook_simpletest().
+ */
+function phone_simpletest() {
+  $dir = drupal_get_path('module', 'phone'). '/tests';
+  $tests = file_scan_directory($dir, '\.test$');
+  return array_keys($tests);
+}
+
+/**
+ * @} End of "defgroup field_api_hooks".
+ */
+
+
+/**
+ * Country supported or not by the module ?
+ *
+ * @param string $countrycode
+ * @return boolean Returns a boolean containting the answer to the question.
+ */
+function phone_supported_countrycode($countrycode) {
+  return (phone_country_info($countrycode) !== NULL ? TRUE : FALSE);
+}
+
+
+/**
+ * Get a country meta info
+ *
+ * @param string $countrycode
+ * @return array Returns a array containing country metadata
+ */
+function phone_country_info($countrycode = NULL,$prefix=null) {
+  drupal_add_css(drupal_get_path('module', 'phone') . '/theme/phone.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
+  static $i;
+
+  //$countrycode = trim($countrycode);
+  if (phone_countries($countrycode) !== FALSE) {
+    $phone_info_function = 'phone_'. $countrycode . '_metadata';
+    module_load_include('inc', 'phone', 'include/phone.'. $countrycode);
+
+    $cc = phone_country_code_convert($prefix);
+
+    $phone_info_function = 'phone_'. $cc . '_metadata';
+    module_load_include('inc', 'phone', 'include/phone.'. $cc);
+
+    if (function_exists($phone_info_function)) {
+      return $phone_info_function();
+    }
+  }
+  //Country not taken into account yet
+  return FALSE;
+}
+
+/**
+ * Verification for Phone Numbers.
+ *
+ * @param string $countrycode
+ * @param string $phonenumber
+ * @return boolean Returns boolean FALSE if the phone number is not valid.
+ */
+function valid_phone_number($countrycode, $phonenumber) {
+
+  $countrycode = trim($countrycode);
+  $phonenumber = trim($phonenumber);
+
+  if (phone_supported_countrycode($countrycode)) {
+    $valid_phone_function = 'valid_'. $countrycode . '_phone_number';
+    module_load_include('inc', 'phone', 'include/phone.'. $countrycode);
+
+    if (function_exists($valid_phone_function)) {
+       return $valid_phone_function($phonenumber);
+    }
+  }
+  //Country not taken into account yet
+  return FALSE;
+}
+
+/**
+ * Formatting for Phone Numbers.
+ *
+ * @param string $countrycode
+ * @param string $phonenumber
+ * @return boolean Returns boolean FALSE if the phone number is not valid.
+ */
+function format_phone_number($countrycode, $phonenumber, $field) {
+
+  $countrycode = trim($countrycode);
+  $phonenumber = trim(preg_replace('/[^0-9]/','',$phonenumber));
+
+  if (phone_supported_countrycode($countrycode)) {
+    $format_phone_function = 'format_'. $countrycode . '_phone_number';
+    module_load_include('inc', 'phone', 'include/phone.'. $countrycode);
+
+    if (function_exists($format_phone_function)) {
+      //$field['phone_default_country_code'] = ($_POST['field_diyh_telephone_country']) ? $_POST['field_diyh_telephone_country'] : $_POST['profile_main']['field_diyh_telephone_country'];
+
+      if (!empty($_POST['field_diyh_telephone_country'])) {
+        $field['phone_default_country_code'] = $_POST['field_diyh_telephone_country'];
+      }
+      elseif (!empty($_POST['profile_main']['field_diyh_telephone_country'])) {
+        $field['phone_default_country_code'] = $_POST['profile_main']['field_diyh_telephone_country'];
+      }
+      else {
+          $field['phone_default_country_code'] = NULL;
+      }
+        
+      // = trim(preg_replace('/[^0-9]/','',$_POST['field_diyh_telephone_country']));
+      //$code = '+'.$_POST['field_diyh_telephone_country'];
+      //$num = $format_phone_function($phonenumber, $field);
+      //die($num);
+
+      return $format_phone_function($phonenumber, $field);
+    }
+  }
+  //Country not taken into account yet
+  return FALSE;
+}
+
+/**
+ * Settings for changing fileds types
+ * 
+ * @param type $field_type
+ * @return array
+ */
+function phone_get_fieldType_default_values($field_type) {
+    $default_values = NULL;
+    switch ($field_type) {
+        
+        case 'telephone':
+            
+            $default_values = array(
+                'sample_field_config_data_settings' => array(
+                    //'profile2_private' => FALSE,
+                ),
+                'sample_config_instance_data' => array(
+                    'widget' => array(
+                        //'weight' => 31,
+                        'type' => 'telephone_default',
+                        'module' => 'telephone',
+                        'active' => 1,
+                        'settings' => array(
+                            'placeholder' => '',
+                            'telephone_validation' => array(
+                                'valid_format' => 0,
+                                'valid_countries' => array(),
+                                'store_format' => 1,
+                            ),
+                        ), 
+                    ),
+                    'settings' => array(
+                        'user_register_form' => FALSE,
+                    ),
+                    'display' => array(
+                        'default' => array(
+                            'label' => 'above',
+                            'type' => 'text_plain',
+                            'settings' => array(),
+                            'module' => 'text',
+                            //'weight' => 11,
+                        ),
+                    ),
+                ),
+            );
+            
+            break;
+        
+        
+        case 'phone':
+            
+            $default_values = array(
+                'sample_field_config_data_settings' => array(
+                    'country' => 'int',
+                    //'profile2_private' => FALSE,
+                ),
+                'sample_config_instance_data' => array(
+                    'widget' => array(
+                        'active' => 0,
+                        'module' => 'phone',
+                        'type' => 'phone_textfield',                        
+                        'settings' => array(
+                            'maxlength_js_label' => 'Content limited to @limit characters, remaining...',
+                        ),
+
+                        'weight' => 1,
+                    ),
+                    'settings' => array(
+                        'ca_phone_parentheses' => 1,
+                        'ca_phone_separator' => '-',
+                        'phone_country_code' => 1,
+                        'phone_default_country_code' => 234,
+                        'phone_int_max_length' => 15,
+                        'user_register_form' => FALSE,
+                    ),
+                    'display' => array(
+                        'default' => array(
+                            'label' => 'above',
+                            'module' => 'phone',
+                            'settings' => array(),
+                            'type' => 'phone',
+                            //'weight' => 7,
+                        ),
+                    ),
+                ),
+            );
+            
+            break;
+    }
+    
+    return $default_values;
+}
+
+
+/**
+ * Allows to change fields types.
+ * 
+ * @param type $target_field_shortname
+ *  example 
+ *      'diyh_telephone'   -> hotel node type, old phone format, initially unlimited values
+ *      'diyh_mobile_number' -> user main profile field, initially old phone format, 1 value max
+ *      '_billing_phone_number' -> commerce customer billing profile, initially simple text format, 1 value
+ * 
+ * @param type $sample_type
+ * example 
+ *      'telephone'
+ * 
+ */
+function phone_change_fieldType($target_field_shortname, $sample_type, $test_mode = FALSE) {
+    
+    $target_field = 'field_' . $target_field_shortname;
+    
+    $default_sample_values = phone_get_fieldType_default_values($sample_type);
+    
+    if ($test_mode) {
+        dpm($default_sample_values, '$default_sample_values for "' . $sample_type . '"');
+    }
+    
+    // 1. No need to change field_data_field_<$target_field_shortname> and field_revision_field_<$target_field_shortname>
+    //    fields format (type, length, default value, etc)
+    //    because they are the same with the target Telephone type fields format, like this:
+    //    $sample_field_structure = array(
+    //        'type' => 'varchar',
+    //        'length' => 256,
+    //        'not null' => FALSE,
+    //    );
+
+    
+    
+    // 2. Change field_config table settings
+
+    // Fetch the initial target field configuration (that should be changed to a new Telephone type config)
+    $target_field_config = db_query("SELECT data FROM {field_config} WHERE field_name = :field_name", array(
+        ':field_name' => $target_field,
+      ))
+      ->fetchObject();
+    $target_data = unserialize($target_field_config->data);
+    
+    if ($test_mode) {
+        dpm($target_data,'$target_data field config');
+    }
+    
+    // Preserve the value profile2_private of the field, if it's been set
+    if (array_key_exists('profile2_private', $target_data['settings'])) {
+        $default_sample_values['sample_field_config_data_settings']['profile2_private'] = $target_data['settings']['profile2_private'];
+    }
+    $target_data['settings'] = $default_sample_values['sample_field_config_data_settings'];
+    
+    if (!$test_mode) {
+        // Update the target field config settings and a field type with a new default sample data
+        $target_data['settings'] = $default_sample_values['sample_field_config_data_settings'];
+        db_update('field_config')
+          ->fields(array(
+            'data' => serialize($target_data),
+            'type' => $sample_type,
+            'module' => $sample_type,  
+          ))
+          ->condition('field_name', $target_field)
+          ->execute();    
+    }
+    else {
+        dpm($target_data, '$target_data field config TO BE CHANGED');
+    }
+
+    
+    // 3. Change field_config_instance table settings
+    
+    // Define a sample data
+    $sample_config_instance_data = $default_sample_values['sample_config_instance_data'];
+    
+    // Change settings for each bundle (node type) where the target field might appear
+    $instances = field_info_field_map();
+
+    foreach ($instances[$target_field]['bundles'] as $entity_type => $bundles) {
+        foreach ($bundles as $bundle) {
+
+            // Fetch the initial field instance data
+            $target_field_config_instance = db_query("SELECT data FROM {field_config_instance}
+                                               WHERE field_name = :field_name
+                                               AND entity_type = :entity_type
+                                               AND bundle = :bundle", array(
+                ':field_name' => $target_field,
+                ':entity_type' => $entity_type,
+                ':bundle' => $bundle,
+              ))
+              ->fetchObject();
+            $target_data = unserialize($target_field_config_instance->data);
+
+            if ($test_mode) {
+                dpm($target_data, '$target_data field config instance');
+            }
+            
+            // Preserve the weight of the target field element
+            $target_display_default_weight = $target_data['display']['default']['weight'];
+            $target_widget_weight = $target_data['widget']['weight'];
+            
+            $target_data['widget'] = $sample_config_instance_data['widget'];
+            $target_data['settings'] = $sample_config_instance_data['settings'];
+            $target_data['display']['default'] = $sample_config_instance_data['display']['default'];
+            // Restore the initial target field values for weight
+            $target_data['display']['default']['weight'] = $target_display_default_weight;
+            $target_data['widget']['weight'] = $target_widget_weight;
+            
+            if (!$test_mode) {
+                // Store the value back to the database
+                db_update('field_config_instance')
+                  ->fields(array('data' => serialize($target_data)))
+                  ->condition('field_name', $target_field)
+                  ->condition('entity_type', $entity_type)
+                  ->condition('bundle', $bundle)
+                  ->execute();
+            }
+            else {
+                dpm($target_data, '$target_data field config instance TO BE CHANGED');
+            }
+
+        }
+    }
+    
+    if (!$test_mode) {
+        drupal_set_message('A format of the field ' . $target_field . ' has been changed to the "' . $sample_type . '" field format.');
+    }
+    
+}
+

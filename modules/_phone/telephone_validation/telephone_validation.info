@@ -1,0 +1,16 @@
+name = Telephone Validation
+description = Use Google'sphone number handling library to validate Telephone field.
+core = 7.x
+
+dependencies[] = telephone
+;dependencies[] = composer_manager
+dependencies[] = field_ui
+
+autoload[src][] = libphonenumber
+
+; Information added by Drupal.org packaging script on 2015-08-17
+version = "7.x-1.x-dev"
+core = "7.x"
+project = "telephone_validation"
+datestamp = "1439821445"
+

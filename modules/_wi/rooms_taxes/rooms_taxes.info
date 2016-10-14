@@ -8,3 +8,5 @@ package = Rooms Mobiashara
 version = "7.x-1.x"
 project = "rooms_taxes"
 
+;autoload[psr-0][] = src
+;autoload[src][] = libphonenumber
