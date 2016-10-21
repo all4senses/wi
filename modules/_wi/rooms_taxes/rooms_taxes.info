@@ -1,4 +1,4 @@
-name = Rooms Taxes.......
+name = Rooms Taxes.......~~
 description = Taxes for rooms and incidentals
 dependencies[] = entity
 core = 7.x
