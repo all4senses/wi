@@ -1,0 +1,9 @@
+#########
+Changelog
+#########
+
+Predictable tests 7.x-1.0-beta, 2012-01-01
+-----------------------------------------
+
+by benoit.bryon: Renamed from predicabletests to predictable_tests.
+by benoit.bryon: Initialized project.
