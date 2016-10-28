@@ -1,0 +1,16 @@
+name = DNRD SharePoint Migration
+description = Migrates and updates content from sharepoint feed to Drupal website.
+package = SharePoint
+core = 7.x
+
+dependencies[] = migrate
+
+;Includes files containting migration classes
+files[] = inc/DnrdMigrateListXML.inc
+files[] = inc/audience.inc
+files[] = inc/audience_service_category.inc
+files[] = inc/services.inc
+files[] = inc/audience_ar.inc
+files[] = inc/audience_service_category_ar.inc
+files[] = inc/services_ar.inc
+files[] = inc/news.inc
