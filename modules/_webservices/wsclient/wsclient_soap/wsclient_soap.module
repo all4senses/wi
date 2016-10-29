@@ -70,7 +70,8 @@ class WSClientSOAPEndpoint extends WSClientEndpoint {
   public function call($operation, $arguments) {
     $client = $this->client();
     try {
-      $response = $client->__soapCall($operation, $arguments);
+      //$response = $client->__soapCall($operation, $arguments);
+      $response = $client->$operation($arguments);
       return $response;
     }
     catch (SoapFault $e) {
