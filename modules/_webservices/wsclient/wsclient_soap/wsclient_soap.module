@@ -70,9 +70,11 @@ class WSClientSOAPEndpoint extends WSClientEndpoint {
   public function call($operation, $arguments) {
     $client = $this->client();
     try {
+      dpm($client, '$client');
       dpm($operation, '$operation');
       dpm($arguments, '$arguments');
       $response = $client->__soapCall($operation, $arguments);
+      $client->__setLocation('http://192.168.1.5/mockBasicHttpBinding_ISyncService?WSDL');
       return $response;
     }
     catch (SoapFault $e) {
