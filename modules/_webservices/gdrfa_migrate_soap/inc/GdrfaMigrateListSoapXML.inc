@@ -278,8 +278,8 @@ class Gdrfa_MigrateItemSoapXML extends MigrateItem {
     $xml = simplexml_load_string('<xml>' . $soap_results->GetProceduresResult->any . '</xml>', NULL, NULL, "http://schemas.xmlsoap.org/soap/envelope/");
     dpm($xml, '$xml x1');
     $ids = array();
-    foreach ($soap->xpath('//DocumentElement/dummy/Ebeneficiary') as $key => $item) {
-    //foreach ($soap->xpath('//dummy[@diffgr:id="dummy1"]')[0]->children() as $key => $item) {
+    foreach ($xml->xpath('//DocumentElement/dummy/Ebeneficiary') as $key => $item) {
+    //foreach ($xml->xpath('//dummy[@diffgr:id="dummy1"]')[0]->children() as $key => $item) {
         $ids[(string) $key] =(string) $item;
     }
     dpm($ids,'$ids');
