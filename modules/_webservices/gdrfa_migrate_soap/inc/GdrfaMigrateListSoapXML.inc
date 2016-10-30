@@ -57,23 +57,16 @@ class Gdrfa_MigrateListSoapXML extends MigrateListXML {
   }
   
   /**
-   * Load the XML at the given URL, and return an array of the IDs found within.
+   * Call to SOAP service and return an array of the IDs found within.
    *
    * @return array
-   *   Array to be passed on for iteration to MigrateItemXML class.
+   *   Array to be passed on for iteration to MigrateItemSoapXML class.
    *
    * @override
    */
   public function getIdList($target = 'IDs') {
     migrate_instrument_start("Retrieve $target from the $this->soap_service_name SOAP service");
     
-    /*
-    $context = stream_context_create(array(
-      'http' => array('header' => 'Accept: application/xml'),
-    ));
-    $xml = file_get_contents($this->listUrl, FALSE, $context);
-    $xml = simplexml_load_string($xml);
-    */
     
     if($service = wsclient_service_load($this->soap_service_name)) {
       
@@ -101,22 +94,7 @@ class Gdrfa_MigrateListSoapXML extends MigrateListXML {
     }
     
     migrate_instrument_stop("Retrieve $target from the $this->soap_service_name SOAP service");
-    
-    /*
-    if ($xml !== FALSE) {
-      return array_unique($ids);
-    }
-    else {
-      Migration::displayMessage(t(
-        'Loading of !listUrl failed:',
-        array('!listUrl' => $this->listUrl)
-      ));
-      foreach (libxml_get_errors() as $error) {
-        Migration::displayMessage(MigrateItemsXML::parseLibXMLError($error));
-      }
-      return NULL;
-    }
-    */
+   
   }
 
   /**
@@ -136,54 +114,179 @@ class Gdrfa_MigrateListSoapXML extends MigrateListXML {
       return 0;
     }
     
-    
-    /*
-    $xml = simplexml_load_file($this->listUrl);
-    $this->registerNamespaces($xml);
-    // Number of sourceid elements beneath the top-level element.
-    $count = count($xml);
-    // Additionally, if there are any namespaces registered, try to count
-    // elements with namespaces as well.
-    if ($namespaces = $xml->getNamespaces()) {
-      foreach ($namespaces as $prefix => $url) {
-        $count += count($xml->children($url));
-      }
-    }
-    
-    return $count;
-    */
+   
   }
   
+
+}
+
+
+/**
+ * Implementation of MigrateItem, for retrieving a parsed XML document given
+ * an ID provided by a MigrateList class.
+ */
+class MigrateItemSoapXML extends MigrateItem {
   /**
-   * Overrides to fetch the id of elements that need to be migrated.
+   * A URL pointing to an XML document containing the data for one item to be
+   * migrated.
+   *
+   * @var string
+   */
+  //protected $itemUrl;
+  protected $soap_service_name;
+
+  /**
+   * An array of namespaces to explicitly register before Xpath queries.
+   *
+   * @var array
+   */
+  protected $namespaces;
+
+  /**
+   * {@inheritdoc}
+   */
+  
+    
+  public function __construct($soap_service_name, array $namespaces = array()) {
+    parent::__construct();
+    //$this->itemUrl = $item_url;
+    $this->soap_service_name = $soap_service_name;
+    $this->namespaces = $namespaces;
+    // Suppress errors during parsing, so we can pick them up after.
+    libxml_use_internal_errors(TRUE);
+  }
+
+  /**
+   * Explicitly register namespaces on an XML element.
    *
    * @param SimpleXMLElement $xml
-   *   An instance of SimpleXMLElement class allowing us to fetch XML content.
+   *   A SimpleXMLElement to register the namespaces on.
+   */
+  protected function registerNamespaces(SimpleXMLElement &$xml) {
+    foreach ($this->namespaces as $prefix => $namespace) {
+      $xml->registerXPathNamespace($prefix, $namespace);
+    }
+  }
+
+  /**
+   * {@inheritdoc}
    *
-   * @return array
-   *   Array of item ids that need to be migrated sorted by modified.
+   * Implementors are expected to return an object representing a source item.
+   */
+  public function getItem($id) {
+    // Make sure we actually have an ID.
+    if (empty($id)) {
+      return NULL;
+    }
+    
+    /*
+    $item_url = $this->constructItemUrl($id);
+    // And make sure we actually got a URL to fetch.
+    if (empty($item_url)) {
+      return NULL;
+    }
+    */
+    
+    // Get the XML object at the specified URL.
+    //$xml = $this->loadXmlUrl($item_url);
+    
+    $xml = $this->loadXml_from_SOAP($id);
+    
+    
+    if ($xml !== FALSE) {
+      if ($xml) {
+        $this->registerNamespaces($xml);
+        $return = new stdclass();
+        $return->xml = $xml;
+      }
+      else {
+        $return = NULL;
+      }
+      return $return;
+    }
+    else {
+      $migration = Migration::currentMigration();
+      $message = t('Loading of item !id from SOAP service has failed:', array('!id' => $id));
+      foreach (libxml_get_errors() as $error) {
+        $message .= "\n" . $error->message;
+      }
+      $migration->getMap()->saveMessage(
+        array($id), $message, MigrationBase::MESSAGE_ERROR);
+      libxml_clear_errors();
+      return NULL;
+    }
+  }
+
+  /**
+   * Creates a valid URL pointing to current item.
    *
-   * @override
+   * The default implementation simply replaces the :id token in the URL with
+   * the ID obtained from MigrateListXML. Override if the item URL is not so
+   * easily expressed from the ID.
+   *
+   * @param mixed $id
+   *   XML item ID
+   *
+   * @return string
+   *   Formatted string with replaced tokens
    */
   /*
-  protected function getIDsFromXML(SimpleXMLElement $xml) {
-    $ids = array();
-    $result = $xml->xpath($this->xpath);
-
-    foreach ($result as $element) {
-      $ids[] = (string) $element;
-    }
-    // Additionally, if there are any namespaces registered, try to parse
-    // elements with namespaces as well.
-    if ($namespaces = $xml->getNamespaces()) {
-      foreach ($namespaces as $prefix => $url) {
-        foreach ($xml->children($url) as $element) {
-          $ids[] = (string) $element;
-        }
-      }
-    }
-    return array_unique($ids);
+  protected function constructItemUrl($id) {
+    return str_replace(':id', $id, $this->itemUrl);
   }
-*/  
+  */
 
+  /**
+   * Loads the XML.
+   *
+   * Default XML loader - just use Simplexml directly. This can be overridden
+   * for preprocessing of XML (removal of unwanted elements, caching of XML if
+   * the source service is slow, etc.)
+   *
+   * @param string $item_url
+   *   URL to the XML file
+   *
+   * @return SimpleXMLElement
+   *   Loaded XML
+   */
+  /*
+  protected function loadXmlUrl($item_url) {
+    return simplexml_load_file($item_url);
+  }
+  */
+  
+  /**
+   * Loads the XML.
+   *
+   * Default XML loader - just use Simplexml directly. This can be overridden
+   * for preprocessing of XML (removal of unwanted elements, caching of XML if
+   * the source service is slow, etc.)
+   *
+   * @param string $item_url
+   *   URL to the XML file
+   *
+   * @return SimpleXMLElement
+   *   Loaded XML
+   */
+  protected function loadXml_from_SOAP($id) {
+    
+    $service = wsclient_service_load($this->soap_service_name);
+    $soap_results = $service->GetProcedures(array($id));
+    $xml = simplexml_load_string('<xml>' . $soap_results->GetProceduresResult->any . '</xml>', NULL, NULL, "http://schemas.xmlsoap.org/soap/envelope/");
+    //return simplexml_load_file($item_url);
+    return $xml;
+  }
+  
+
+  /**
+   * Implments MigrateItem::hash().
+   */
+  public function hash($row) {
+    // $row->xml is a SimpleXMLElement. Temporarily set it as an XML string
+    // to prevent parent::hash() failing when try to create the hash.
+    migrate_instrument_start('MigrateItemSoapXML::hash');
+    $hash = md5(serialize($row->xml->asXML()));
+    migrate_instrument_stop('MigrateItemSoapXML::hash');
+    return $hash;
+  }
 }
