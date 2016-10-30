@@ -42,10 +42,20 @@ class Gdrfa_MigrateListSoapXML extends MigrateListXML {
    * @override
    */
   public function __construct($soap_service_name) {
-    parent::__construct($list_url);
+    //parent::__construct($list_url);
     $this->soap_service_name = $soap_service_name;
   }
 
+  
+  /**
+   * {@inheritdoc}
+   *
+   * Our public face is the SOAP Service we're getting items from
+   */
+  public function __toString() {
+    return $this->soap_service_name;
+  }
+  
   /**
    * Load the XML at the given URL, and return an array of the IDs found within.
    *
@@ -54,15 +64,16 @@ class Gdrfa_MigrateListSoapXML extends MigrateListXML {
    *
    * @override
    */
-  public function getIdList() {
-    migrate_instrument_start("Retrieve IDs from the $this->soap_service_name SOAP service");
+  public function getIdList($target = 'IDs') {
+    migrate_instrument_start("Retrieve $target from the $this->soap_service_name SOAP service");
     
-    
+    /*
     $context = stream_context_create(array(
       'http' => array('header' => 'Accept: application/xml'),
     ));
     $xml = file_get_contents($this->listUrl, FALSE, $context);
     $xml = simplexml_load_string($xml);
+    */
     
     if($service = wsclient_service_load($this->soap_service_name)) {
       
@@ -76,7 +87,7 @@ class Gdrfa_MigrateListSoapXML extends MigrateListXML {
       }
       else {
         Migration::displayMessage(t(
-          'Calling a !soap_service_name SOAP service\'s function GetPendingRecordIds() has failed',
+          "Calling a !soap_service_name SOAP service\'s function GetPendingRecordIds() for $target has failed",
           array('!soap_service_name' => $this->soap_service_name)
         ));
       }
@@ -84,12 +95,12 @@ class Gdrfa_MigrateListSoapXML extends MigrateListXML {
     }
     else {
       Migration::displayMessage(t(
-        'Accessing service !soap_service_name has failed',
+        "Accessing service !soap_service_name for $target has failed",
         array('!soap_service_name' => $this->soap_service_name)
       ));
     }
     
-    migrate_instrument_stop("Retrieve IDs from the $this->soap_service_name SOAP service");
+    migrate_instrument_stop("Retrieve $target from the $this->soap_service_name SOAP service");
     
     /*
     if ($xml !== FALSE) {
@@ -108,6 +119,41 @@ class Gdrfa_MigrateListSoapXML extends MigrateListXML {
     */
   }
 
+  /**
+   * {@inheritdoc}
+   *
+   * Return a count of all available IDs from the source listing.
+   * The default implementation assumes the count of top-level elements
+   * reflects the number of IDs available - in many cases, you will need
+   * to override this to reflect your particular XML structure.
+   */
+  public function computeCount() {
+    
+    if($ids = getIdList('--Count of IDs--')) {
+      return count($ids);
+    }
+    else {
+      return 0;
+    }
+    
+    
+    /*
+    $xml = simplexml_load_file($this->listUrl);
+    $this->registerNamespaces($xml);
+    // Number of sourceid elements beneath the top-level element.
+    $count = count($xml);
+    // Additionally, if there are any namespaces registered, try to count
+    // elements with namespaces as well.
+    if ($namespaces = $xml->getNamespaces()) {
+      foreach ($namespaces as $prefix => $url) {
+        $count += count($xml->children($url));
+      }
+    }
+    
+    return $count;
+    */
+  }
+  
   /**
    * Overrides to fetch the id of elements that need to be migrated.
    *
