@@ -276,6 +276,7 @@ class Gdrfa_MigrateItemSoapXML extends MigrateItem {
     $soap_results = $service->GetProcedures(array($id));
     dpm($soap_results, '$soap_results 1');
     $xml = simplexml_load_string('<xml>' . $soap_results->GetProceduresResult->any . '</xml>', NULL, NULL, "http://schemas.xmlsoap.org/soap/envelope/");
+    dpm($xml, '$xml x1');
     //return simplexml_load_file($item_url);
     return $xml;
   }
