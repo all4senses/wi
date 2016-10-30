@@ -195,15 +195,16 @@ class Gdrfa_MigrateItemSoapXML extends MigrateItem {
     dpm($xml, '$xml 1');
     
     if ($xml !== FALSE) {
-      if ($xml) {
+//      if ($xml) 
+        {
         $this->registerNamespaces($xml);
         dpm($xml, '$xml 2');
         $return = new stdclass();
         $return->xml = $xml;
       }
-      else {
-        $return = NULL;
-      }
+//      else {
+//        $return = NULL;
+//      }
       return $return;
     }
     else {
