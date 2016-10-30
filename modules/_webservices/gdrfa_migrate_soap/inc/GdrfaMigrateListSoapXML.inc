@@ -125,7 +125,7 @@ class Gdrfa_MigrateListSoapXML extends MigrateListXML {
  * Implementation of MigrateItem, for retrieving a parsed XML document given
  * an ID provided by a MigrateList class.
  */
-class MigrateItemSoapXML extends MigrateItem {
+class Gdrfa_MigrateItemSoapXML extends MigrateItem {
   /**
    * A URL pointing to an XML document containing the data for one item to be
    * migrated.
