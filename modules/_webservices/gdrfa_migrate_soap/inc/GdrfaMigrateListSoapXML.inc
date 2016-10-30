@@ -129,7 +129,7 @@ class Gdrfa_MigrateListSoapXML extends MigrateListXML {
    */
   public function computeCount() {
     
-    if($ids = getIdList('--Count of IDs--')) {
+    if($ids = $this->getIdList('--Count of IDs--')) {
       return count($ids);
     }
     else {
