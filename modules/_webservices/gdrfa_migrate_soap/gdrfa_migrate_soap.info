@@ -1,0 +1,10 @@
+name = GDRFA SOAP Services Migration
+description = Migrates and updates content from SOAP service to a Drupal website.
+package = SharePoint
+core = 7.x
+
+dependencies[] = migrate
+
+;Includes files containting migration classes
+files[] = inc/GdrfaMigrateListSoapXML.inc
+files[] = inc/audience.inc

@@ -1,0 +1,72 @@
+<?php
+
+/**
+ * @file
+ * THIS FILE INTENTIONALLY LEFT BLANK.
+ *
+ * Yes, there is no code in the .module file. Migrate operates almost entirely
+ * through classes, and by adding any files containing class definitions to the
+ * .info file, those files are automatically included only when the classes they
+ * contain are referenced. The one non-class piece you need to implement is
+ * hook_migrate_api(), but because .migrate.inc is registered using
+ * hook_hook_info, by defining your implementation of that hook in
+ * example.migrate.inc, it is automatically invoked only when needed.
+ */
+
+include 'inc/GdrfaMigrateListSoapXML.inc';
+
+/**
+ * Implements hook_cron().
+ */
+function gdrfa_migrate_soap_cron() {
+  
+  return;
+  
+  
+  
+  
+  
+
+  // We will check the last imported time of audience as
+  // services_ar is the firstd in order of migration.
+  $last_imported = db_select('migrate_log', 'ml')
+    ->fields('ml', array('endtime'))
+    ->condition('machine_name', 'audience')
+    ->isNotNull('endtime')
+    ->orderBy('endtime', 'DESC')
+    ->execute()
+    ->fetchField();
+
+  $interval = 86400000;
+  drupal_set_message($last_imported);
+  //Check for last migration run and import latest content again
+  if((time()*1000) - $last_imported > $interval)
+  {
+    migrate_static_registration(array('audience'));
+    $migration = Migration::getInstance('audience');
+    $migration->processImport();
+
+    /*
+    migrate_static_registration(array('audience_service_cateogry'));
+    $migration = Migration::getInstance('audience_service_cateogry');
+    $migration->processImport();
+
+    migrate_static_registration(array('services'));
+    $migration = Migration::getInstance('services');
+    $migration->processImport();
+
+    migrate_static_registration(array('audience_ar'));
+    $migration = Migration::getInstance('audience_ar');
+    $migration->processImport();
+
+    migrate_static_registration(array('audience_service_cateogry_ar'));
+    $migration = Migration::getInstance('audience_service_cateogry_ar');
+    $migration->processImport();
+
+    migrate_static_registration(array('services_ar'));
+    $migration = Migration::getInstance('services_ar');
+    $migration->processImport();
+    */
+  }
+
+}
