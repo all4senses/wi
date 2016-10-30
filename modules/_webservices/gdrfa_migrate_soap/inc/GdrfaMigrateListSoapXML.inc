@@ -192,10 +192,12 @@ class Gdrfa_MigrateItemSoapXML extends MigrateItem {
     
     $xml = $this->loadXml_from_SOAP($id);
     
+    dpm($xml, '$xml 1');
     
     if ($xml !== FALSE) {
       if ($xml) {
         $this->registerNamespaces($xml);
+        dpm($xml, '$xml 2');
         $return = new stdclass();
         $return->xml = $xml;
       }
@@ -272,6 +274,7 @@ class Gdrfa_MigrateItemSoapXML extends MigrateItem {
     
     $service = wsclient_service_load($this->soap_service_name);
     $soap_results = $service->GetProcedures(array($id));
+    dpm($soap_results, '$soap_results 1');
     $xml = simplexml_load_string('<xml>' . $soap_results->GetProceduresResult->any . '</xml>', NULL, NULL, "http://schemas.xmlsoap.org/soap/envelope/");
     //return simplexml_load_file($item_url);
     return $xml;
