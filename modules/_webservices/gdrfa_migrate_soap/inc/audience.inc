@@ -94,7 +94,7 @@ class AudienceMigrate_Soap extends XMLMigration {
 
     // Declare unmapped source fields.
     $unmapped_sources = array(
-      
+      /*
       //'EProcedureName',
       'ADepartment',
       'EDepartment',
@@ -120,6 +120,7 @@ class AudienceMigrate_Soap extends XMLMigration {
       'NeedUpdate',
       'UpdateID',
       'Active',
+      */
 
     );
     $this->addUnmigratedSources($unmapped_sources);
