@@ -72,6 +72,9 @@ class Gdrfa_MigrateListSoapXML extends MigrateListXML {
       
       if($soap_results = $service->GetPendingRecordIds()) {
         if (!empty($soap_results->GetPendingRecordIdsResult->long)) {
+          if (!is_array($soap_results->GetPendingRecordIdsResult->long)) {
+            $soap_results->GetPendingRecordIdsResult->long = array($soap_results->GetPendingRecordIdsResult->long);
+          }
           return array_unique($soap_results->GetPendingRecordIdsResult->long);
         }
         else {
