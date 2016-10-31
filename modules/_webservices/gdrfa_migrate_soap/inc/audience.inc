@@ -95,7 +95,7 @@ class AudienceMigrate_Soap extends XMLMigration {
     // Declare unmapped source fields.
     $unmapped_sources = array(
       
-      'EProcedureName',
+      //'EProcedureName',
       'ADepartment',
       'EDepartment',
       'ECustomerType',
@@ -128,7 +128,7 @@ class AudienceMigrate_Soap extends XMLMigration {
     $unmapped_destinations = array(
       'nid',
       'uid',
-      'redirect',
+      //'redirect',
       'changed',
       'log',
       'translate',
